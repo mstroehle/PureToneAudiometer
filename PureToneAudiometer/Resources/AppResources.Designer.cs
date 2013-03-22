@@ -88,6 +88,15 @@ namespace PureToneAudiometer.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Attenuation can&apos;t be &gt; 0..
+        /// </summary>
+        public static string Oscillator_Attenuation_Exception {
+            get {
+                return ResourceManager.GetString("Oscillator_Attenuation_Exception", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to LeftToRight.
         /// </summary>
         public static string ResourceFlowDirection {

@@ -134,4 +134,7 @@
   <data name="AppBarMenuItemText" xml:space="preserve">
     <value>Menu Item</value>
   </data>
+  <data name="Oscillator_Attenuation_Exception" xml:space="preserve">
+    <value>Attenuation can't be &gt; 0.</value>
+  </data>
 </root>
