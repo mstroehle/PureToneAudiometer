@@ -15,7 +15,7 @@
         public MainPageView()
         {
             InitializeComponent();
-            pitchGenerator = new PitchGenerator(new Oscillator(-15, 100));
+            pitchGenerator = new PitchGenerator(new SineOscillator(-15, 100));
         }
 
         private void PlayTone_OnClick(object sender, RoutedEventArgs e)
@@ -31,7 +31,7 @@
             {
                 this.playing = true;
                 button.Content = "Stop";
-                Media.SetSource(new PureToneSource(pitchGenerator));
+                Media.SetSource(new PureToneSource(pitchGenerator, TimeSpan.FromSeconds(1), new PauseDuration(TimeSpan.FromMilliseconds(100), TimeSpan.FromSeconds(2))));
             }
         }
 
@@ -49,12 +49,25 @@
 
         private void LeftButton_OnClick(object sender, RoutedEventArgs e)
         {
-            Media.Balance = -1;
+            pitchGenerator.MutedChannel = Channel.Right;
+            Media.Balance = -1.0;
+        }
+
+        private void BothButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            pitchGenerator.MutedChannel = Channel.None;
+            Media.Balance = 0;
         }
 
         private void RightButton_OnClick(object sender, RoutedEventArgs e)
         {
-            Media.Balance = 1;
+            pitchGenerator.MutedChannel = Channel.Left;
+            Media.Balance = 1.0;
+        }
+
+        private void Balance_OnChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            Media.Balance = e.NewValue*0.2 - 1;
         }
     }
 }

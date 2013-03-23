@@ -29,6 +29,10 @@
 
         <!--ContentPanel - place additional content here-->
         <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
@@ -36,11 +40,13 @@
             </Grid.ColumnDefinitions>
             <StackPanel Grid.Column="0" Orientation="Horizontal">
                 <Button Content="Left" Click="LeftButton_OnClick"/>
+                <Button Content="Both" Click="BothButton_OnClick"/>
                 <Button Content="Right" Click="RightButton_OnClick"/>
             </StackPanel>
             
             <Slider Grid.Column="1" Orientation="Vertical" ValueChanged="Attenuation_OnChanged"/>
             <Slider Grid.Column="2" Orientation="Vertical" ValueChanged="Frequency_OnChanged"/>
+            <!--<Slider Grid.Row="1" Orientation="Horizontal" Grid.ColumnSpan="3" ValueChanged="Balance_OnChanged"/>-->
         </Grid>
         <StackPanel Orientation="Vertical" Grid.Row="2">
             <Button Content="Play" Click="PlayTone_OnClick" Name="PlayTone"/>

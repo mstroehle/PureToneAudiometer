@@ -3,11 +3,11 @@
     using System;
     using Resources;
 
-    public class Oscillator : IOscillator
+    public class SineOscillator : IOscillator
     {
         private const double TwoPi = Math.PI*2;
       
-        private const int TwoByteLimit = 65536;
+        private const int TwoByteLimit = 65535;
 
         private int absoluteAttenuation = TwoByteLimit;
         private double frequency;
@@ -17,14 +17,14 @@
 
         private readonly int sampling;
 
-        public Oscillator(int attenuation, double frequency, int sampling)
+        public SineOscillator(int attenuation, double frequency, int sampling)
         {
             this.sampling = sampling;
             Attenuation = attenuation;
             Frequency = frequency;
         }
 
-        public Oscillator(int attenuation, double frequency) : this(attenuation, frequency, 44100)
+        public SineOscillator(int attenuation, double frequency) : this(attenuation, frequency, 44100)
         {
         }
 
@@ -60,7 +60,7 @@
 
         public short GetValue()
         {
-            var amplitude = (short)(short.MaxValue  * Math.Sin(TwoPi * currentAngle / uint.MaxValue));
+            var amplitude = (int)(short.MaxValue  * Math.Sin(TwoPi * currentAngle / uint.MaxValue));
             var sample = (short)(amplitude * absoluteAttenuation >> 16);
         
             currentAngle += angleStep;
