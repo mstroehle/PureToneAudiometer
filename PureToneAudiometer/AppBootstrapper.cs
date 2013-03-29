@@ -18,6 +18,7 @@
             container.PerRequest<PresetsPageViewModel>();
             container.PerRequest<PresetViewModel>();
             container.PerRequest<SavedFilesViewModel>();
+            container.RegisterPerRequest(typeof(AddItemViewModel), "AddItemViewModel", typeof(AddItemViewModel));
             container.RegisterPhoneServices();
             
             AddConventions();

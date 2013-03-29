@@ -10,21 +10,21 @@
         private const int TwoByteLimit = 65535;
 
         private int absoluteAttenuation = TwoByteLimit;
-        private double frequency;
+        private int frequency;
         private int attenuation;
         private uint currentAngle;
         private uint angleStep;
 
         private readonly int sampling;
 
-        public SineOscillator(int attenuation, double frequency, int sampling)
+        public SineOscillator(int attenuation, int frequency, int sampling)
         {
             this.sampling = sampling;
             Attenuation = attenuation;
             Frequency = frequency;
         }
 
-        public SineOscillator(int attenuation, double frequency) : this(attenuation, frequency, 44100)
+        public SineOscillator(int attenuation, int frequency) : this(attenuation, frequency, 44100)
         {
         }
 
@@ -45,7 +45,7 @@
          
         }
 
-        public double Frequency
+        public int Frequency
         {
             get
             {
@@ -54,7 +54,7 @@
             set
             {
                 frequency = value;
-                angleStep = (uint)(frequency*uint.MaxValue/sampling);
+                angleStep = (uint)((double)frequency*uint.MaxValue/sampling);
             }
         }
 

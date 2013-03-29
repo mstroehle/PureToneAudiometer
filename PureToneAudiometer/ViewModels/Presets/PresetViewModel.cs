@@ -2,10 +2,13 @@
 {
     using System;
     using System.ComponentModel;
+    using System.IO;
     using System.Linq;
     using System.Reactive.Linq;
+    using System.Windows;
     using System.Windows.Controls;
     using Caliburn.Micro;
+    using Action = System.Action;
 
     public class PresetViewModel : ViewModelBase
     {
@@ -80,6 +83,8 @@
         public PresetViewModel(INavigationService navigationService, IEventAggregator eventAggregator) : base(navigationService)
         {
             this.eventAggregator = eventAggregator;
+
+            this.eventAggregator.Subscribe(this);
             PresetItems = new BindableCollection<PresetItemViewModel>();
             SelectedItems = new BindableCollection<PresetItemViewModel>();
 
@@ -88,17 +93,41 @@
                       .Throttle(TimeSpan.FromMilliseconds(300))
                       .Subscribe(e =>
                                      {
-                                         var canSaveFlag = !string.IsNullOrEmpty(PresetName);
+                                         var invalidFileNameCharacters = Path.GetInvalidFileNameChars();
+                                         var canSaveFlag = !string.IsNullOrEmpty(PresetName) &&
+                                                           !PresetName.Any(x => invalidFileNameCharacters.Any(y => x == y));
                                          eventAggregator.Publish(new Events.CanSavePreset(canSaveFlag));
                                      });
         }
 
         public void AddNewItem()
         {
-            PresetItems.Add(new PresetItemViewModel
-                                {
-                                    Frequency = 448
-                                });                        
+            var builder = new AddItemDialogBuilder();
+
+            var confirmationAction = new Action(() =>
+                                                    {
+                                                        var errorString = builder.UnderlyingViewModel.Error;
+
+                                                        if (!string.IsNullOrEmpty(errorString))
+                                                            MessageBox.Show(errorString, "Validation error",
+                                                                            MessageBoxButton.OK);
+                                                        else
+                                                        {
+                                                            var newItem = builder.UnderlyingViewModel.ToPresetItem();
+                                                            var existingItem =
+                                                                PresetItems.SingleOrDefault(
+                                                                    x => x.Frequency == newItem.Frequency);
+                                                            if (existingItem != null)
+                                                                PresetItems.Remove(existingItem);
+                                                            PresetItems.Add(newItem);
+
+                                                        }
+                                                    });
+            builder.Title("Add item...")
+                   .LeftButtonContent("OK")
+                   .RightButtonContent("Cancel")
+                   .LeftButtonAction(confirmationAction)
+                   .Show();            
         }
 
         public void SelectionChanged(SelectionChangedEventArgs args)

@@ -50,21 +50,21 @@
                     <DataTemplate>
                         <Grid>
                             <StackPanel>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="Frequency [Hz]:"/>
-                                    <TextBlock Text="{Binding Frequency}" FontSize="24"/>
+                                <StackPanel Orientation="Horizontal" Margin="2,5,2,5">
+                                    <TextBlock Text="Frequency [Hz]:" FontSize="24" FontWeight="SemiBold"/>
+                                    <TextBlock Margin="3,0,0,0" Text="{Binding Frequency}" FontSize="24" FontWeight="SemiBold"/>
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="Tone duration:"/>
-                                    <TextBlock Text="{Binding PitchDuration}"/>
+                                    <TextBlock Text="Tone duration (msec):" FontWeight="Light"/>
+                                    <TextBlock Margin="3,0,0,0" Text="{Binding PitchDuration}"/>
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="Minimum pause duration:"/>
-                                    <TextBlock Text="{Binding MinimumPauseDuration}"/>
+                                    <TextBlock Text="Minimum pause duration (msec):" FontWeight="Light"/>
+                                    <TextBlock Margin="3,0,0,0" Text="{Binding MinimumPauseDuration}"/>
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="Maximum pause duration:"/>
-                                    <TextBlock Text="{Binding MaximumPauseDuration}"/>
+                                    <TextBlock Text="Maximum pause duration (msec):" FontWeight="Light"/>
+                                    <TextBlock Margin="3,0,0,0" Text="{Binding MaximumPauseDuration}"/>
                                 </StackPanel>
                             </StackPanel>
                         </Grid>

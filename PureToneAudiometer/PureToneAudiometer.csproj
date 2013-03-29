@@ -105,6 +105,8 @@
     <Compile Include="TriggeredBooleanToVisibilityConverter.cs" />
     <Compile Include="ViewModels\MainPageViewModel.cs" />
     <Compile Include="ViewModels\PresetsPageViewModel.cs" />
+    <Compile Include="ViewModels\Presets\AddItemDialogBuilder.cs" />
+    <Compile Include="ViewModels\Presets\AddItemViewModel.cs" />
     <Compile Include="ViewModels\Presets\FileViewModel.cs" />
     <Compile Include="ViewModels\Presets\PresetItemViewModel.cs" />
     <Compile Include="ViewModels\Presets\PresetViewModel.cs" />
@@ -123,8 +125,8 @@
     <Compile Include="Views\PresetsPageView.xaml.cs">
       <DependentUpon>PresetsPageView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Presets\AddPresetItemView.xaml.cs">
-      <DependentUpon>AddPresetItemView.xaml</DependentUpon>
+    <Compile Include="Views\Presets\AddItemView.xaml.cs">
+      <DependentUpon>AddItemView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Presets\PresetView.xaml.cs">
       <DependentUpon>PresetView.xaml</DependentUpon>
@@ -150,7 +152,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Presets\AddPresetItemView.xaml">
+    <Page Include="Views\Presets\AddItemView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

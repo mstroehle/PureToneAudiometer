@@ -11,7 +11,7 @@
     public interface IPitchGenerator
     {
         int Attenuation { get; set; }
-        double Frequency { get; set; }
+        int Frequency { get; set; }
         Channel MutedChannel { get; set; }
         Sample GetSample();
     }
@@ -20,7 +20,7 @@
     {
         private readonly IOscillator oscillator;
         private int attenuation;
-        private double frequency;
+        private int frequency;
 
         public int Attenuation
         {
@@ -33,7 +33,7 @@
         }
 
 
-        public double Frequency
+        public int Frequency
         {
             get { return frequency; }
             set

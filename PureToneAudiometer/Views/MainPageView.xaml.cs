@@ -43,7 +43,7 @@
 
         private void Frequency_OnChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            var newFrequency = e.NewValue*800;
+            var newFrequency = (int)(e.NewValue*800);
             pitchGenerator.Frequency = newFrequency;
         }
 

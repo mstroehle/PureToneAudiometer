@@ -3,7 +3,7 @@
     public interface IOscillator
     {
         int Attenuation { get; set; }
-        double Frequency { get; set; }
+        int Frequency { get; set; }
         short GetValue();
         void Reset();
     }

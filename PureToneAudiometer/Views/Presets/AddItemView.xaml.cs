@@ -1,8 +1,8 @@
 ﻿namespace PureToneAudiometer.Views.Presets
 {
-    public partial class PresetView
+    public partial class AddItemView
     {
-        public PresetView()
+        public AddItemView()
         {
             InitializeComponent();
         }

@@ -3,6 +3,7 @@
     using System.IO;
     using System.Threading.Tasks;
     using System.Windows;
+    using System.Windows.Controls;
     using Caliburn.Micro;
     using Windows.Storage;
     using System.Linq;
@@ -23,7 +24,6 @@
         }
 
         private readonly IEventAggregator eventAggregator;
-
 
         public SavedFilesViewModel(IEventAggregator eventAggregator, INavigationService navigationService) : base(navigationService)
         {
@@ -73,6 +73,18 @@
             }
 
             await FetchFiles();
+        }
+
+        public void SelectionChanged(SelectionChangedEventArgs e)
+        {
+            if (e.AddedItems.Count == 0)
+                return;
+            var selectedItem = e.AddedItems[0] as FileViewModel;
+            
+            if (selectedItem == null)
+                return;
+            
+            eventAggregator.Publish(new Events.SelectNewPreset(selectedItem.PresetName));
         }
     }
 }

@@ -6,7 +6,7 @@
     public class PresetItemViewModel
     {
         [DataMember]
-        public double Frequency { get; set; }
+        public int Frequency { get; set; }
         [DataMember]
         public int PitchDuration { get; set; }
         [DataMember]

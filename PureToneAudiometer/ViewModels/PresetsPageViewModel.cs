@@ -11,7 +11,10 @@
     using Presets;
     using Windows.Storage;
 
-    public sealed class PresetsPageViewModel : Conductor<ViewModelBase>.Collection.OneActive, IHandle<Events.PresetItemsSelectionChanged>, IHandle<Events.CanSavePreset>
+    public sealed class PresetsPageViewModel :  Conductor<ViewModelBase>.Collection.OneActive, 
+                                                IHandle<Events.PresetItemsSelectionChanged>, 
+                                                IHandle<Events.CanSavePreset>,
+                                                IHandle<Events.SelectNewPreset>
     {
         public PresetViewModel PresetViewModel { get; private set; }
         public SavedFilesViewModel SavedPresetsViewModel { get; private set; }
@@ -21,6 +24,7 @@
         private bool isSelectVisible;
         private bool isAppBarVisible;
         private bool saveItems;
+        private int index;
 
         public Uri SelectIcon
         {
@@ -77,6 +81,17 @@
             }
         }
 
+        public int Index
+        {
+            get { return index; }
+            set
+            {
+                if (value == index) return;
+                index = value;
+                NotifyOfPropertyChange(() => Index);
+            }
+        }
+
         public PresetsPageViewModel(IEventAggregator eventAggregator, PresetViewModel preset, SavedFilesViewModel savedFiles)
         {
             PresetViewModel = preset;
@@ -86,7 +101,8 @@
             DeleteIcon = new Uri("/Toolkit.Content/ApplicationBar.Delete.png", UriKind.Relative);
             IsSelectVisible = true;
             IsAppBarVisible = true;
-            ActivateItem(preset);
+            
+            ActivateItem(PresetViewModel);
         }
 
         public void SelectItems()
@@ -147,7 +163,9 @@
 
             try
             {
+#pragma warning disable 168
                 var existingFile = await localFolder.GetFileAsync(fileName);
+#pragma warning restore 168
                 
                 var result = MessageBox.Show("There already is a preset with that name. Do you want to overwrite it?",
                                     "Saving preset", MessageBoxButton.OKCancel);
@@ -172,6 +190,31 @@
         public void Handle(Events.CanSavePreset message)
         {
             CanSaveItems = message.CanSave;
+        }
+
+        public async void Handle(Events.SelectNewPreset message)
+        {
+            var fullFileName = message.FileName + ".preset";
+            var localFolder = ApplicationData.Current.LocalFolder;
+
+            try
+            {
+                var localFile = await localFolder.GetFileAsync(fullFileName);
+                
+                using (var stream = await localFile.OpenStreamForReadAsync())
+                {
+                    var serializer = new DataContractSerializer(typeof (List<PresetItemViewModel>));
+                    var presetItems = serializer.ReadObject(stream) as List<PresetItemViewModel>;
+
+                    PresetViewModel.PresetItems.Clear();
+                    PresetViewModel.PresetItems.AddRange(presetItems);
+                    PresetViewModel.PresetName = message.FileName;
+                    Index = 0;
+                }
+            }
+            catch (FileNotFoundException)
+            {
+            }
         }
     }
 }

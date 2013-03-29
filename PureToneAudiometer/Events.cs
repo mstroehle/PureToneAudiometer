@@ -38,5 +38,27 @@
                 this.fileName = fileName;
             }
         }
+
+        public class SelectNewPreset
+        {
+            private readonly string fileName;
+            public string FileName { get { return fileName; } }
+
+            public SelectNewPreset(string fileName)
+            {
+                this.fileName = fileName;
+            }
+        }
+
+        public class AddItemValidationResult
+        {
+            private readonly bool passed;
+            public bool Passed { get { return passed; } }
+
+            public AddItemValidationResult(bool hasPassedValidation)
+            {
+                passed = hasPassedValidation;
+            }
+        }
     }
 }
