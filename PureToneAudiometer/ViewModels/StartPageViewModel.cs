@@ -6,9 +6,21 @@
 
 	public class StartPageViewModel : ViewModelBase
 	{
-		public ReadOnlyObservableCollection<NavigationItem> NavigationItems { get; private set; }
+	    private int selectedIndex;
+	    public ReadOnlyObservableCollection<NavigationItem> NavigationItems { get; private set; }
 
-		public StartPageViewModel(INavigationService navigationService)
+        public int SelectedIndex
+        {
+            get { return selectedIndex; }
+            set
+            {
+                if (value == selectedIndex) return;
+                selectedIndex = value;
+                NotifyOfPropertyChange(() => SelectedIndex);
+            }
+        }
+
+	    public StartPageViewModel(INavigationService navigationService)
 			: base(navigationService)
 		{
 			NavigationItems =
@@ -17,7 +29,7 @@
 						                                         {
 							                                         new NavigationItem
 								                                         {
-									                                         Glyph = "&#x2649",
+									                                         Glyph = "",
 									                                         NavigationName = "Presets",
 									                                         NavigationAction =
 										                                         () =>
@@ -26,11 +38,12 @@
 								                                         },
 							                                         new NavigationItem
 								                                         {
-									                                         Glyph = "&#x269C",
+									                                         Glyph = "",
 									                                         NavigationName = "Settings",
-									                                         NavigationAction = () => { }
+									                                         NavigationAction = () => NavigationService.UriFor<SettingsPageViewModel>().Navigate()
 								                                         }
 						                                         }));
+	        SelectedIndex = -1;
 		}
 
 		public void SelectionChanged(SelectionChangedEventArgs e)
@@ -43,6 +56,8 @@
 			if (addedItem == null)
 				return;
 
+            SelectedIndex = -1;
+            
 			addedItem.NavigationAction();
 		}
 

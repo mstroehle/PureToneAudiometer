@@ -92,8 +92,11 @@
             }
         }
 
-        public PresetsPageViewModel(IEventAggregator eventAggregator, PresetViewModel preset, SavedFilesViewModel savedFiles)
+        private readonly INavigationService navigationService;
+
+        public PresetsPageViewModel(INavigationService navigationService, IEventAggregator eventAggregator, PresetViewModel preset, SavedFilesViewModel savedFiles)
         {
+            this.navigationService = navigationService;
             PresetViewModel = preset;
             SavedPresetsViewModel = savedFiles;
             eventAggregator.Subscribe(this);
@@ -185,6 +188,18 @@
                 var serializer = new DataContractSerializer(typeof(List<PresetItemViewModel>));
                 serializer.WriteObject(stream, PresetViewModel.PresetItems);
             }
+        }
+
+        public void NewPreset()
+        {
+            PresetViewModel.IsSelectionEnabled = false;
+            PresetViewModel.PresetName = null;
+            PresetViewModel.PresetItems.Clear();
+        }
+
+        public void UseCurrent()
+        {
+            navigationService.UriFor<StartPageViewModel>().Navigate();
         }
 
         public void Handle(Events.CanSavePreset message)

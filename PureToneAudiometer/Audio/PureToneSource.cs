@@ -74,7 +74,7 @@
         private const BitsPerSample SelectedBitsPerSample = BitsPerSample.PcmStereo;
         private const int BytesPerSample = (short)SelectedBitsPerSample/8;
 
-        private const int NumberOfSamples = 64;
+        private const int NumberOfSamples = 2048;
 
         private const int BufferByteLength = (int) SelectedChannelsSetup*BytesPerSample*NumberOfSamples;
 

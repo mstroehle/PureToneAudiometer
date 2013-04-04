@@ -47,9 +47,14 @@
                 IconUri="{Binding DeleteIcon}"
                 Visibility="{Binding IsSelectVisible, Converter={StaticResource InvertedVisibilityConverter}}"
                 />
+            <bindableAppBar:BindableAppBarMenuItem Name="NewPreset"
+                                                   Text="New"/>
             <bindableAppBar:BindableAppBarMenuItem Name="SaveItems"
                                                    Text="Save"
                                                    />
+            <bindableAppBar:BindableAppBarMenuItem Name="UseCurrent"
+                                                   Text="Use current"/>
+            
         </bindableAppBar:BindableAppBar>
     </Grid>
     

@@ -1,5 +1,7 @@
 ﻿namespace PureToneAudiometer
 {
+    using System.Collections.Generic;
+    using System.IO.IsolatedStorage;
     using System.Windows.Controls;
     using Caliburn.Micro;
     using Caliburn.Micro.BindableAppBar;
@@ -18,6 +20,10 @@
             container.PerRequest<PresetsPageViewModel>();
             container.PerRequest<PresetViewModel>();
             container.PerRequest<SavedFilesViewModel>();
+            container.PerRequest<StartPageViewModel>();
+            container.Handler<IDictionary<string, object>>(
+                simpleContainer => IsolatedStorageSettings.ApplicationSettings);
+            container.PerRequest<SettingsPageViewModel>();
             container.RegisterPerRequest(typeof(AddItemViewModel), "AddItemViewModel", typeof(AddItemViewModel));
             container.RegisterPhoneServices();
             
@@ -35,7 +41,7 @@
             return container.GetInstance(service, key);
         }
 
-        protected override System.Collections.Generic.IEnumerable<object> GetAllInstances(System.Type service)
+        protected override IEnumerable<object> GetAllInstances(System.Type service)
         {
             return container.GetAllInstances(service);
         }

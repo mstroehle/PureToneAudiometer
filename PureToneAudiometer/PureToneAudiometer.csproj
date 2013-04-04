@@ -112,6 +112,7 @@
     <Compile Include="ViewModels\Presets\PresetItemViewModel.cs" />
     <Compile Include="ViewModels\Presets\PresetViewModel.cs" />
     <Compile Include="ViewModels\Presets\SavedFilesViewModel.cs" />
+    <Compile Include="ViewModels\SettingsPageViewModel.cs" />
     <Compile Include="ViewModels\StartPageViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
     <Compile Include="Views\MainPageView.xaml.cs">
@@ -135,6 +136,9 @@
     </Compile>
     <Compile Include="Views\Presets\SavedFilesView.xaml.cs">
       <DependentUpon>SavedFilesView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SettingsPageView.xaml.cs">
+      <DependentUpon>SettingsPageView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\StartPageView.xaml.cs">
       <DependentUpon>StartPageView.xaml</DependentUpon>
@@ -166,6 +170,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Presets\SavedFilesView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SettingsPageView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
