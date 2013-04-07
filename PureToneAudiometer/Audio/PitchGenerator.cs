@@ -48,6 +48,8 @@
         public PitchGenerator(IOscillator oscillator)
         {
             this.oscillator = oscillator;
+            Attenuation = oscillator.Attenuation;
+            Frequency = oscillator.Frequency;
         }
 
         public Sample GetSample()

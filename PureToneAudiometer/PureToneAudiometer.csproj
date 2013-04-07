@@ -101,10 +101,16 @@
     <Compile Include="Audio\PitchGenerator.cs" />
     <Compile Include="Audio\WaveFormat.cs" />
     <Compile Include="Events.cs" />
+    <Compile Include="IXmlItemsFileManager.cs" />
     <Compile Include="LocalizedStrings.cs" />
     <Compile Include="TriggeredBooleanToVisibilityConverter.cs" />
+    <Compile Include="ViewModels\Core\ChannelSelectionPageViewModel.cs" />
+    <Compile Include="ViewModels\Core\HearingTestViewModel.cs" />
+    <Compile Include="ViewModels\Core\HostPageViewModel.cs" />
     <Compile Include="ViewModels\MainPageViewModel.cs" />
-    <Compile Include="ViewModels\NavigationItem.cs" />
+    <Compile Include="RecentItemManager.cs" />
+    <Compile Include="ViewModels\Start\AudiometerPageViewModel.cs" />
+    <Compile Include="ViewModels\Start\NavigationItem.cs" />
     <Compile Include="ViewModels\PresetsPageViewModel.cs" />
     <Compile Include="ViewModels\Presets\AddItemDialogBuilder.cs" />
     <Compile Include="ViewModels\Presets\AddItemViewModel.cs" />
@@ -112,11 +118,25 @@
     <Compile Include="ViewModels\Presets\PresetItemViewModel.cs" />
     <Compile Include="ViewModels\Presets\PresetViewModel.cs" />
     <Compile Include="ViewModels\Presets\SavedFilesViewModel.cs" />
+    <Compile Include="ViewModels\Start\RecentItemViewModel.cs" />
+    <Compile Include="ViewModels\Start\RecentPageViewModel.cs" />
     <Compile Include="ViewModels\SettingsPageViewModel.cs" />
-    <Compile Include="ViewModels\StartPageViewModel.cs" />
+    <Compile Include="ViewModels\Start\MainMenuPageViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
+    <Compile Include="Views\Core\ChannelSelectionPageView.xaml.cs">
+      <DependentUpon>ChannelSelectionPageView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Core\HearingTestView.xaml.cs">
+      <DependentUpon>HearingTestView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Core\HostPageView.xaml.cs">
+      <DependentUpon>HostPageView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\MainPageView.xaml.cs">
       <DependentUpon>MainPageView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Start\AudiometerPageView.xaml.cs">
+      <DependentUpon>AudiometerPageView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Audio\SineOscillator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -140,8 +160,11 @@
     <Compile Include="Views\SettingsPageView.xaml.cs">
       <DependentUpon>SettingsPageView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\StartPageView.xaml.cs">
-      <DependentUpon>StartPageView.xaml</DependentUpon>
+    <Compile Include="Views\Start\MainMenuPageView.xaml.cs">
+      <DependentUpon>MainMenuPageView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Start\RecentPageView.xaml.cs">
+      <DependentUpon>RecentPageView.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -153,7 +176,23 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\Core\ChannelSelectionPageView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Core\HearingTestView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Core\HostPageView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\MainPageView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Start\AudiometerPageView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -177,7 +216,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\StartPageView.xaml">
+    <Page Include="Views\Start\MainMenuPageView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Start\RecentPageView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -194,6 +237,7 @@
     <Content Include="Assets\ApplicationIcon.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Assets\SaveIcon.png" />
     <Content Include="Assets\Tiles\FlipCycleTileLarge.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

@@ -5,11 +5,13 @@
     using System.Windows;
     using System.Windows.Controls;
     using Caliburn.Micro;
+    using Core;
+    using Start;
     using Windows.Storage;
     using System.Linq;
     using System;
 
-    public class SavedFilesViewModel : ViewModelBase, IHandle<Events.PresetScheduledForDeletion>
+    public class SavedFilesViewModel : ViewModelBase, IHandle<Events.PresetScheduledForDeletion>, IHandle<Events.UsePreset>
     {
         private IObservableCollection<FileViewModel> savedFileList;
         public IObservableCollection<FileViewModel> SavedFileList
@@ -25,8 +27,15 @@
 
         private readonly IEventAggregator eventAggregator;
 
-        public SavedFilesViewModel(IEventAggregator eventAggregator, INavigationService navigationService) : base(navigationService)
+        private readonly IXmlItemsFileManager<RecentItemViewModel> recentItemManager;
+
+        private readonly IStorageFolder storageFolder;
+
+        public SavedFilesViewModel(IEventAggregator eventAggregator, IStorageFolder storageFolder, INavigationService navigationService, IXmlItemsFileManager<RecentItemViewModel> recentItemManager)
+            : base(navigationService)
         {
+            this.storageFolder = storageFolder;
+            this.recentItemManager = recentItemManager;
             this.eventAggregator = eventAggregator;
             eventAggregator.Subscribe(this);
             SavedFileList = new BindableCollection<FileViewModel>();
@@ -40,9 +49,8 @@
         private async Task FetchFiles()
         {
             SavedFileList.Clear();
-            var localFolder = ApplicationData.Current.LocalFolder;
 
-            var allFiles = await localFolder.GetFilesAsync();
+            var allFiles = await storageFolder.GetFilesAsync();
             var presetFiles = allFiles.Where(x => x.Name.EndsWith(".preset"));
 
             SavedFileList.AddRange(presetFiles.Select(x => new FileViewModel(eventAggregator)
@@ -61,12 +69,11 @@
             if (result != MessageBoxResult.OK)
                 return;
 
-            var localFolder = ApplicationData.Current.LocalFolder;
-
             try
             {
-                var file = await localFolder.GetFileAsync(message.FileName + ".preset");
-                await file.DeleteAsync();
+                var file = await storageFolder.GetFileAsync(message.FileName);
+                await file.DeleteAsync(); 
+                await recentItemManager.RemoveAsync(x => x.FilePath == message.FileName);
             }
             catch (FileNotFoundException)
             {
@@ -74,6 +81,8 @@
 
             await FetchFiles();
         }
+
+        
 
         public void SelectionChanged(SelectionChangedEventArgs e)
         {
@@ -85,6 +94,19 @@
                 return;
             
             eventAggregator.Publish(new Events.SelectNewPreset(selectedItem.PresetName));
+        }
+
+        public void Handle(Events.UsePreset message)
+        {
+            var recent = new RecentItemViewModel
+                             {
+                                 FilePath = message.FileName,
+                                 PresetName = Path.GetFileNameWithoutExtension(message.FileName),
+                                 LastUsedDate = DateTime.Now
+                             };
+
+            recentItemManager.UpdateOrAddAsync(recent, model => model.FilePath == message.FileName);
+            NavigationService.UriFor<ChannelSelectionPageViewModel>().WithParam(x => x.PresetFileName, message.FileName).Navigate();
         }
     }
 }

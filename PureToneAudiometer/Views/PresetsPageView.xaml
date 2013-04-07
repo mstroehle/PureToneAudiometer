@@ -36,6 +36,10 @@
             Name="AppBar" 
             BackgroundColor="White">
             <bindableAppBar:BindableAppBarButton
+                Name="SaveItems"
+                Text="Save"
+                IconUri="{Binding SaveIcon}"/>
+            <bindableAppBar:BindableAppBarButton
                     Name="SelectItems"
                     Text="Select"
                     IconUri="{Binding SelectIcon}"
@@ -49,12 +53,6 @@
                 />
             <bindableAppBar:BindableAppBarMenuItem Name="NewPreset"
                                                    Text="New"/>
-            <bindableAppBar:BindableAppBarMenuItem Name="SaveItems"
-                                                   Text="Save"
-                                                   />
-            <bindableAppBar:BindableAppBarMenuItem Name="UseCurrent"
-                                                   Text="Use current"/>
-            
         </bindableAppBar:BindableAppBar>
     </Grid>
     

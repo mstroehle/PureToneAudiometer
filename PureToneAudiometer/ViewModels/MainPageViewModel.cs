@@ -1,12 +1,22 @@
 ﻿namespace PureToneAudiometer.ViewModels
 {
     using Caliburn.Micro;
+    using Start;
 
-    public class MainPageViewModel :  ViewModelBase
+    public class MainPageViewModel : Screen
     {
-        public MainPageViewModel(INavigationService navigationService) : base(navigationService)
+        public RecentPageViewModel Recent { get; private set; }
+        public MainMenuPageViewModel MainMenu { get; private set; }
+
+        public MainPageViewModel(RecentPageViewModel recent, MainMenuPageViewModel mainMenu)
         {
-            navigationService.UriFor<PresetsPageViewModel>().Navigate();
+            Recent = recent;
+            MainMenu = mainMenu;
+        }
+
+        protected override async void OnActivate()
+        {
+            await Recent.Initialize();
         }
     }
 }

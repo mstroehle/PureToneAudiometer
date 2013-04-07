@@ -119,8 +119,11 @@
                                                                     x => x.Frequency == newItem.Frequency);
                                                             if (existingItem != null)
                                                                 PresetItems.Remove(existingItem);
-                                                            PresetItems.Add(newItem);
 
+                                                            PresetItems.Add(newItem);
+                                                            var items = PresetItems.OrderBy(x => x.Frequency).ToList();
+                                                            PresetItems.Clear();
+                                                            PresetItems.AddRange(items);
                                                         }
                                                     });
             builder.Title("Add item...")

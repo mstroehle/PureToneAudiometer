@@ -1,15 +1,12 @@
 ﻿namespace PureToneAudiometer.ViewModels
 {
     using System;
-    using System.Collections.Generic;
     using System.ComponentModel;
-    using System.IO;
-    using System.Runtime.Serialization;
+    using System.Linq;
     using System.Windows;
     using Caliburn.Micro;
     using Microsoft.Phone.Controls;
     using Presets;
-    using Windows.Storage;
 
     public sealed class PresetsPageViewModel :  Conductor<ViewModelBase>.Collection.OneActive, 
                                                 IHandle<Events.PresetItemsSelectionChanged>, 
@@ -45,6 +42,17 @@
                 if (Equals(value, deleteIcon)) return;
                 deleteIcon = value;
                 NotifyOfPropertyChange(() => DeleteIcon);
+            }
+        }
+
+        public Uri SaveIcon
+        {
+            get { return saveIcon; }
+            set
+            {
+                if (Equals(value, saveIcon)) return;
+                saveIcon = value;
+                NotifyOfPropertyChange(() => SaveIcon);
             }
         }
 
@@ -92,16 +100,19 @@
             }
         }
 
-        private readonly INavigationService navigationService;
+        private Uri saveIcon;
 
-        public PresetsPageViewModel(INavigationService navigationService, IEventAggregator eventAggregator, PresetViewModel preset, SavedFilesViewModel savedFiles)
+        private readonly IXmlItemsFileManager<PresetItemViewModel> itemsManager;
+
+        public PresetsPageViewModel(IEventAggregator eventAggregator, IXmlItemsFileManager<PresetItemViewModel> itemsManager, PresetViewModel preset, SavedFilesViewModel savedFiles)
         {
-            this.navigationService = navigationService;
             PresetViewModel = preset;
             SavedPresetsViewModel = savedFiles;
+            this.itemsManager = itemsManager;
             eventAggregator.Subscribe(this);
             SelectIcon = new Uri("/Toolkit.Content/ApplicationBar.Select.png", UriKind.Relative);
             DeleteIcon = new Uri("/Toolkit.Content/ApplicationBar.Delete.png", UriKind.Relative);
+            SaveIcon = new Uri("/Assets/SaveIcon.png", UriKind.Relative);
             IsSelectVisible = true;
             IsAppBarVisible = true;
             
@@ -162,32 +173,21 @@
         public async void SaveItems()
         {
             var fileName = PresetViewModel.PresetName + ".preset";
-            var localFolder = ApplicationData.Current.LocalFolder;
+            itemsManager.FileName = fileName;
 
-            try
+            var items = (await itemsManager.GetAsync()).ToList();
+            if (items.Any())
             {
-#pragma warning disable 168
-                var existingFile = await localFolder.GetFileAsync(fileName);
-#pragma warning restore 168
-                
                 var result = MessageBox.Show("There already is a preset with that name. Do you want to overwrite it?",
-                                    "Saving preset", MessageBoxButton.OKCancel);
+                                   "Saving preset", MessageBoxButton.OKCancel);
 
                 if (result != MessageBoxResult.OK)
                 {
                     return;
                 }
             }
-            catch (FileNotFoundException)
-            {
-            }
 
-            var file = await localFolder.CreateFileAsync(fileName);
-            using (var stream = await file.OpenStreamForWriteAsync())
-            {
-                var serializer = new DataContractSerializer(typeof(List<PresetItemViewModel>));
-                serializer.WriteObject(stream, PresetViewModel.PresetItems);
-            }
+            await itemsManager.Save(PresetViewModel.PresetItems);
         }
 
         public void NewPreset()
@@ -195,11 +195,6 @@
             PresetViewModel.IsSelectionEnabled = false;
             PresetViewModel.PresetName = null;
             PresetViewModel.PresetItems.Clear();
-        }
-
-        public void UseCurrent()
-        {
-            navigationService.UriFor<StartPageViewModel>().Navigate();
         }
 
         public void Handle(Events.CanSavePreset message)
@@ -210,26 +205,14 @@
         public async void Handle(Events.SelectNewPreset message)
         {
             var fullFileName = message.FileName + ".preset";
-            var localFolder = ApplicationData.Current.LocalFolder;
+            itemsManager.FileName = fullFileName;
+            
+            var items = await itemsManager.GetAsync();
 
-            try
-            {
-                var localFile = await localFolder.GetFileAsync(fullFileName);
-                
-                using (var stream = await localFile.OpenStreamForReadAsync())
-                {
-                    var serializer = new DataContractSerializer(typeof (List<PresetItemViewModel>));
-                    var presetItems = serializer.ReadObject(stream) as List<PresetItemViewModel>;
-
-                    PresetViewModel.PresetItems.Clear();
-                    PresetViewModel.PresetItems.AddRange(presetItems);
-                    PresetViewModel.PresetName = message.FileName;
-                    Index = 0;
-                }
-            }
-            catch (FileNotFoundException)
-            {
-            }
+            PresetViewModel.PresetItems.Clear();
+            PresetViewModel.PresetItems.AddRange(items);
+            PresetViewModel.PresetName = message.FileName;
+            Index = 0;
         }
     }
 }

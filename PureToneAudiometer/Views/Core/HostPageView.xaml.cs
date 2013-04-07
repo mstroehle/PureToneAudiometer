@@ -8,11 +8,11 @@ using System.Windows.Navigation;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
 
-namespace PureToneAudiometer.Views
+namespace PureToneAudiometer.Views.Core
 {
-    public partial class MainPageView : PhoneApplicationPage
+    public partial class HostPageView : PhoneApplicationPage
     {
-        public MainPageView()
+        public HostPageView()
         {
             InitializeComponent();
         }

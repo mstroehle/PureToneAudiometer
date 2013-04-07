@@ -17,7 +17,12 @@
 
         public void ScheduleForDeletion()
         {
-            eventAggregator.Publish(new Events.PresetScheduledForDeletion(PresetName));
+            eventAggregator.Publish(new Events.PresetScheduledForDeletion(PresetName + ".preset"));
+        }
+
+        public void UsePreset()
+        {
+            eventAggregator.Publish(new Events.UsePreset(PresetName + ".preset"));
         }
     }
 }
