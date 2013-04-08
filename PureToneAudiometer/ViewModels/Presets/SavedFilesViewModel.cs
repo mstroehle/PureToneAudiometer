@@ -27,15 +27,15 @@
 
         private readonly IEventAggregator eventAggregator;
 
-        private readonly IXmlItemsFileManager<RecentItemViewModel> recentItemManager;
+        private readonly IAsyncXmlFileManager recentManager;
 
         private readonly IStorageFolder storageFolder;
 
-        public SavedFilesViewModel(IEventAggregator eventAggregator, IStorageFolder storageFolder, INavigationService navigationService, IXmlItemsFileManager<RecentItemViewModel> recentItemManager)
+        public SavedFilesViewModel(IEventAggregator eventAggregator, IStorageFolder storageFolder, INavigationService navigationService, IAsyncXmlFileManager recentManager)
             : base(navigationService)
         {
             this.storageFolder = storageFolder;
-            this.recentItemManager = recentItemManager;
+            this.recentManager = recentManager;
             this.eventAggregator = eventAggregator;
             eventAggregator.Subscribe(this);
             SavedFileList = new BindableCollection<FileViewModel>();
@@ -72,8 +72,9 @@
             try
             {
                 var file = await storageFolder.GetFileAsync(message.FileName);
-                await file.DeleteAsync(); 
-                await recentItemManager.RemoveAsync(x => x.FilePath == message.FileName);
+                recentManager.FileName = "recent.xml";
+                await file.DeleteAsync();
+                await recentManager.RemoveFromCollection<RecentItemViewModel>(x => x.FilePath == message.FileName);
             }
             catch (FileNotFoundException)
             {
@@ -104,8 +105,8 @@
                                  PresetName = Path.GetFileNameWithoutExtension(message.FileName),
                                  LastUsedDate = DateTime.Now
                              };
-
-            recentItemManager.UpdateOrAddAsync(recent, model => model.FilePath == message.FileName);
+            recentManager.FileName = "recent.xml";
+            recentManager.UpdateOrAddToCollection(recent, model => model.FilePath == message.FileName);
             NavigationService.UriFor<ChannelSelectionPageViewModel>().WithParam(x => x.PresetFileName, message.FileName).Navigate();
         }
     }

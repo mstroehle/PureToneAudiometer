@@ -1,5 +1,6 @@
 ﻿namespace PureToneAudiometer.ViewModels.Core
 {
+    using System.ComponentModel;
     using Audio;
     using Caliburn.Micro;
 
@@ -20,6 +21,12 @@
             HearingTestViewModel.CurrentChannel = CurrentChannel;
             HearingTestViewModel.PresetFileName = PresetFileName;
             ((IActivate)HearingTestViewModel).Activate();
+        }
+
+        public void BackKeyPressed(CancelEventArgs e)
+        {
+            HearingTestViewModel.Deactivate();
+            e.Cancel = false;
         }
     }
 }

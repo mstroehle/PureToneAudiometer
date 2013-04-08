@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using System.IO.IsolatedStorage;
+    using System.Linq;
     using System.Windows.Controls;
     using Audio;
     using Caliburn.Micro;
@@ -9,6 +10,7 @@
     using ViewModels;
     using ViewModels.Core;
     using ViewModels.Presets;
+    using ViewModels.Results;
     using ViewModels.Start;
     using Views.Core;
     using Windows.Storage;
@@ -26,7 +28,7 @@
             container.PerRequest<PresetViewModel>();
             container.PerRequest<SavedFilesViewModel>();
             container.PerRequest<MainMenuPageViewModel>();
-            container.PerRequest<RecentPageViewModel>();
+          
             container.PerRequest<MainPageViewModel>();
             container.Handler<IDictionary<string, object>>(
                 simpleContainer => IsolatedStorageSettings.ApplicationSettings);
@@ -35,23 +37,27 @@
             container.PerRequest<ChannelSelectionPageViewModel>();
             container.PerRequest<HostPageViewModel>();
             container.PerRequest<HearingTestView>();
+            container.PerRequest<RecentPageViewModel>();
             container.Handler<IStorageFolder>(simpleContainer => ApplicationData.Current.LocalFolder);
-            container.Handler<IXmlItemsFileManager<RecentItemViewModel>>(
-                simpleContainer =>
-                new RecentItemManager((IStorageFolder) simpleContainer.GetInstance(typeof (IStorageFolder), null),
-                                      "recent.xml"));
-            container.Handler<IXmlItemsFileManager<PresetItemViewModel>>(
-                simpleContainer =>
-                new XmlItemsFileManager<PresetItemViewModel>(
-                    (IStorageFolder) simpleContainer.GetInstance(typeof (IStorageFolder), null), "default.preset"));
+            container.PerRequest<IAsyncXmlFileManager, AsyncXmlFileManager>();
+            container.PerRequest<TestResultsPageViewModel>();
             container.RegisterPerRequest(typeof(AddItemViewModel), "AddItemViewModel", typeof(AddItemViewModel));
             container.Handler<IOscillator>(simpleContainer => new SineOscillator(-95, 100));
             container.Handler<IPitchGenerator>(
                 simpleContainer =>
                 new PitchGenerator((IOscillator) simpleContainer.GetInstance(typeof (IOscillator), null)));
             container.RegisterPhoneServices();
-            
+            AddDefaultSettings();
             AddConventions();
+        }
+
+        private void AddDefaultSettings()
+        {
+            if (!IsolatedStorageSettings.ApplicationSettings.Any())
+            {
+                IsolatedStorageSettings.ApplicationSettings["MaxVolume"] = 100;
+                IsolatedStorageSettings.ApplicationSettings["MaxRecentItems"] = 5;
+            }
         }
 
         private void AddConventions()

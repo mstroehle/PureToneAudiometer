@@ -1,7 +1,6 @@
 ﻿namespace PureToneAudiometer.ViewModels
 {
     using System.Collections.Generic;
-    using System.Linq;
     using Caliburn.Micro;
 
     public class SettingsPageViewModel : ViewModelBase
@@ -30,17 +29,11 @@
         public SettingsPageViewModel(IDictionary<string, object> settings, INavigationService navigationService) : base(navigationService)
         {
             this.settings = settings;
-            if (!settings.Any())
+         
+            object val;
+            if (settings.TryGetValue("MaxVolume", out val))
             {
-                MaxVolume = "100";
-            }
-            else
-            {
-                object val;
-                if (settings.TryGetValue("MaxVolume", out val))
-                {
-                    MaxVolume = val.ToString();
-                }
+                MaxVolume = val.ToString();
             }
         }
     }

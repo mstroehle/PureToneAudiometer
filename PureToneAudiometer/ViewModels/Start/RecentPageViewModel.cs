@@ -1,5 +1,6 @@
 ﻿namespace PureToneAudiometer.ViewModels.Start
 {
+    using System.Linq;
     using System.Threading.Tasks;
     using System.Windows.Controls;
     using Caliburn.Micro;
@@ -20,20 +21,21 @@
             }
         }
 
-        private readonly IXmlItemsFileManager<RecentItemViewModel> recentItemManager;
+        private readonly IAsyncXmlFileManager recentManager;
         private int selectedIndex;
 
-        public RecentPageViewModel(INavigationService navigationService, IXmlItemsFileManager<RecentItemViewModel> recentItemManager) : base(navigationService)
+        public RecentPageViewModel(INavigationService navigationService, IAsyncXmlFileManager recentManager) : base(navigationService)
         {
             RecentItems = new BindableCollection<RecentItemViewModel>();
-            this.recentItemManager = recentItemManager;
+            this.recentManager = recentManager;
+            this.recentManager.FileName = "recent.xml";
         }
 
         public async Task Initialize()
         {
             RecentItems.Clear();
-            var result = await recentItemManager.GetAsync();
-            RecentItems.AddRange(result);
+            var result = await recentManager.GetCollection<RecentItemViewModel>();
+            RecentItems.AddRange(result.OrderByDescending(x => x.LastUsedDate));
         }
 
         public void SelectionChanged(SelectionChangedEventArgs e)

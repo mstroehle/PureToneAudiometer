@@ -8,6 +8,7 @@
     using Audio;
     using Caliburn.Micro;
     using Presets;
+    using Results;
 
     public class HearingTestViewModel : ViewModelBase
     {
@@ -28,7 +29,7 @@
             get { return Path.GetFileNameWithoutExtension(PresetFileName); }
         }
 
-        private readonly IXmlItemsFileManager<PresetItemViewModel> itemsFileManager;
+        private readonly IAsyncXmlFileManager fileManager;
         private Queue<PresetItemViewModel> presetQueue;
         private IList<PresetItemViewModel> presetItems;
         private string currentFrequency;
@@ -84,15 +85,16 @@
         private Channel currentChannel;
         private string playContent;
 
-
+        private readonly IDictionary<Channel, IList<HearingResult>> results;
         private readonly IPitchGenerator pitchGenerator;
+        private bool firstRun;
         private PresetItemViewModel currentItem;
         private readonly IDictionary<string, object> settings;
         private int maxVolume;
         private string presetFileName;
 
         public HearingTestViewModel(INavigationService navigationService, 
-            IXmlItemsFileManager<PresetItemViewModel> itemsFileManager, 
+            IAsyncXmlFileManager fileManager, 
             IDictionary<string, object> settings,
             IEventAggregator eventAggregator, 
             IPitchGenerator pitchGenerator) : base(navigationService)
@@ -102,10 +104,14 @@
             IsPlaying = true;
             PlayContent = IsPlaying ? "Pause" : "Play";
             CurrentChannel = Channel.None;
+            results = new Dictionary<Channel, IList<HearingResult>>(2);
+            results[Channel.Right] = new List<HearingResult>(30);
+            results[Channel.Left] = new List<HearingResult>(30);
             this.eventAggregator = eventAggregator;
             presetItems = new List<PresetItemViewModel>(10);
             presetQueue = new Queue<PresetItemViewModel>(10);
-            this.itemsFileManager = itemsFileManager;
+            this.fileManager = fileManager;
+            firstRun = true;
         }
 
         public void Play()
@@ -122,23 +128,36 @@
             }
         }
 
-        public void Ok()
+        public async void Ok()
         {
             eventAggregator.Publish(new Events.HearingTest.StopPlaying());
-
+            results[CurrentChannel].Add(new HearingResult
+                                            {
+                                                Frequency = currentItem.Frequency,
+                                                Volume = int.Parse(CurrentVolume)
+                                            });
             if (presetQueue.Count > 0)
             {
                 currentItem = presetQueue.Dequeue();
                 eventAggregator.Publish(new Events.HearingTest.StartPlaying(currentItem));
             }
-            else
+            else if(firstRun)
             {
+                firstRun = false;
                 CurrentChannel = CurrentChannel == Channel.Right ? Channel.Left : Channel.Right;
                 eventAggregator.Publish(new Events.HearingTest.ChannelChanged(CurrentChannel));
                 presetQueue = new Queue<PresetItemViewModel>(presetItems);
                 currentItem = presetQueue.Dequeue();
             }
-
+            else
+            {
+                Deactivate();
+                var testResult = new TestResult(results[Channel.Left], results[Channel.Right]);
+                fileManager.FileName = "Result_" + DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss") + ".xml";
+                await fileManager.Save(testResult);
+                NavigationService.UriFor<TestResultsPageViewModel>().WithParam(x => x.ResultFileName, fileManager.FileName).Navigate();
+                return;
+            }
             pitchGenerator.Frequency = currentItem.Frequency;
             CurrentFrequency = currentItem.Frequency.ToString(CultureInfo.InvariantCulture);
             MuteVolume();
@@ -157,6 +176,11 @@
             CurrentVolume = (maxVolume + pitchGenerator.Attenuation).ToString(CultureInfo.InvariantCulture);
         }
 
+        public void Deactivate()
+        {
+            eventAggregator.Publish(new Events.HearingTest.Deactivate());
+        }
+
         protected override async void OnActivate()
         {
             if (string.IsNullOrEmpty(PresetFileName))
@@ -166,11 +190,11 @@
             MuteVolume();
             NotifyButtons();
 
-            itemsFileManager.FileName = PresetFileName;
+            fileManager.FileName = PresetFileName;
             eventAggregator.Publish(new Events.HearingTest.PitchGeneratorChanged(pitchGenerator));
             eventAggregator.Publish(new Events.HearingTest.ChannelChanged(CurrentChannel));
 
-            presetItems = (await itemsFileManager.GetAsync()).ToList();
+            presetItems = (await fileManager.GetCollection<PresetItemViewModel>()).ToList();
             presetQueue = new Queue<PresetItemViewModel>(presetItems);
             if (presetQueue.Count == 0)
                 return;
@@ -198,14 +222,12 @@
 
         public void IncreaseVolume()
         {
-            //pitchGenerator.Attenuation = pitchGenerator.Attenuation + 5;
             ChangeVolume(5);
             NotifyButtons();
         }
 
         public void DecreaseVolume()
         {
-            //pitchGenerator.Attenuation = pitchGenerator.Attenuation - 5;
             ChangeVolume(-5);
             NotifyButtons();
         }

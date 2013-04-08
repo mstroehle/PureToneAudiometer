@@ -101,14 +101,16 @@
     <Compile Include="Audio\PitchGenerator.cs" />
     <Compile Include="Audio\WaveFormat.cs" />
     <Compile Include="Events.cs" />
-    <Compile Include="IXmlItemsFileManager.cs" />
+    <Compile Include="IAsyncXmlFileManager.cs" />
     <Compile Include="LocalizedStrings.cs" />
     <Compile Include="TriggeredBooleanToVisibilityConverter.cs" />
     <Compile Include="ViewModels\Core\ChannelSelectionPageViewModel.cs" />
     <Compile Include="ViewModels\Core\HearingTestViewModel.cs" />
     <Compile Include="ViewModels\Core\HostPageViewModel.cs" />
+    <Compile Include="ViewModels\Core\HearingResult.cs" />
+    <Compile Include="ViewModels\Core\TestResult.cs" />
     <Compile Include="ViewModels\MainPageViewModel.cs" />
-    <Compile Include="RecentItemManager.cs" />
+    <Compile Include="ViewModels\Results\TestResultsPageViewModel.cs" />
     <Compile Include="ViewModels\Start\AudiometerPageViewModel.cs" />
     <Compile Include="ViewModels\Start\NavigationItem.cs" />
     <Compile Include="ViewModels\PresetsPageViewModel.cs" />
@@ -134,6 +136,9 @@
     </Compile>
     <Compile Include="Views\MainPageView.xaml.cs">
       <DependentUpon>MainPageView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Results\TestResultsPageView.xaml.cs">
+      <DependentUpon>TestResultsPageView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Start\AudiometerPageView.xaml.cs">
       <DependentUpon>AudiometerPageView.xaml</DependentUpon>
@@ -166,6 +171,7 @@
     <Compile Include="Views\Start\RecentPageView.xaml.cs">
       <DependentUpon>RecentPageView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="AsyncXmlFileManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -189,6 +195,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\MainPageView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Results\TestResultsPageView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -102,13 +102,13 @@
 
         private Uri saveIcon;
 
-        private readonly IXmlItemsFileManager<PresetItemViewModel> itemsManager;
+        private readonly IAsyncXmlFileManager manager;
 
-        public PresetsPageViewModel(IEventAggregator eventAggregator, IXmlItemsFileManager<PresetItemViewModel> itemsManager, PresetViewModel preset, SavedFilesViewModel savedFiles)
+        public PresetsPageViewModel(IEventAggregator eventAggregator, IAsyncXmlFileManager manager, PresetViewModel preset, SavedFilesViewModel savedFiles)
         {
             PresetViewModel = preset;
             SavedPresetsViewModel = savedFiles;
-            this.itemsManager = itemsManager;
+            this.manager = manager;
             eventAggregator.Subscribe(this);
             SelectIcon = new Uri("/Toolkit.Content/ApplicationBar.Select.png", UriKind.Relative);
             DeleteIcon = new Uri("/Toolkit.Content/ApplicationBar.Delete.png", UriKind.Relative);
@@ -173,9 +173,9 @@
         public async void SaveItems()
         {
             var fileName = PresetViewModel.PresetName + ".preset";
-            itemsManager.FileName = fileName;
+            manager.FileName = fileName;
 
-            var items = (await itemsManager.GetAsync()).ToList();
+            var items = (await manager.GetCollection<PresetItemViewModel>()).ToList();
             if (items.Any())
             {
                 var result = MessageBox.Show("There already is a preset with that name. Do you want to overwrite it?",
@@ -187,7 +187,7 @@
                 }
             }
 
-            await itemsManager.Save(PresetViewModel.PresetItems);
+            await manager.Save(PresetViewModel.PresetItems.ToList());
         }
 
         public void NewPreset()
@@ -205,9 +205,9 @@
         public async void Handle(Events.SelectNewPreset message)
         {
             var fullFileName = message.FileName + ".preset";
-            itemsManager.FileName = fullFileName;
+            manager.FileName = fullFileName;
             
-            var items = await itemsManager.GetAsync();
+            var items = await manager.GetCollection<PresetItemViewModel>();
 
             PresetViewModel.PresetItems.Clear();
             PresetViewModel.PresetItems.AddRange(items);
