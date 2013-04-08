@@ -103,6 +103,7 @@
     <Compile Include="Events.cs" />
     <Compile Include="IAsyncXmlFileManager.cs" />
     <Compile Include="LocalizedStrings.cs" />
+    <Compile Include="Plotting.cs" />
     <Compile Include="TriggeredBooleanToVisibilityConverter.cs" />
     <Compile Include="ViewModels\Core\ChannelSelectionPageViewModel.cs" />
     <Compile Include="ViewModels\Core\HearingTestViewModel.cs" />
@@ -236,7 +237,9 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Properties\AppManifest.xml" />
     <None Include="Properties\WMAppManifest.xml">
       <SubType>Designer</SubType>
@@ -305,7 +308,16 @@
       <HintPath>..\packages\Caliburn.Micro.1.5.1\lib\wp8\System.Windows.Interactivity.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\OxyPlot.Silverlight\OxyPlot.Silverlight_SL4.csproj">
+      <Project>{388DB184-B394-4F9D-8937-AAE920CAAD70}</Project>
+      <Name>OxyPlot.Silverlight_SL4</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\OxyPlot\OxyPlot.csproj">
+      <Project>{7A0B35C0-DD17-4964-8E9A-44D6CECDC692}</Project>
+      <Name>OxyPlot</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).$(TargetFrameworkVersion).Overrides.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
