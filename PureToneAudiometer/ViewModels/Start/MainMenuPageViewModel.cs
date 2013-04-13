@@ -3,6 +3,7 @@
     using System.Collections.ObjectModel;
     using System.Windows.Controls;
     using Caliburn.Micro;
+    using Results;
 
     public class MainMenuPageViewModel : ViewModelBase
 	{
@@ -38,6 +39,13 @@
 	                                                                                 .Navigate(),
 	                                                                         Description = "Manage and select presets"
 	                                                                     },
+                                                                         new NavigationItem
+                                                                             {
+                                                                                Glyph = "",
+                                                                                NavigationName = "Results browser",
+                                                                                NavigationAction = () => NavigationService.UriFor<BrowserPageViewModel>().Navigate(),
+                                                                                Description = "Browse previously saved test results"
+                                                                             },
 	                                                                 new NavigationItem
 	                                                                     {
 	                                                                         Glyph = "",
@@ -49,6 +57,7 @@
 	                                                                                 .Navigate(),
 	                                                                         Description = "Change appplication settings"
 	                                                                     }
+
 	                                                             }));
 	        SelectedIndex = -1;
 		}

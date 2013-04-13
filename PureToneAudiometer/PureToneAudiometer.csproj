@@ -105,12 +105,13 @@
     <Compile Include="LocalizedStrings.cs" />
     <Compile Include="Plotting.cs" />
     <Compile Include="TriggeredBooleanToVisibilityConverter.cs" />
-    <Compile Include="ViewModels\Core\ChannelSelectionPageViewModel.cs" />
     <Compile Include="ViewModels\Core\HearingTestViewModel.cs" />
     <Compile Include="ViewModels\Core\HostPageViewModel.cs" />
     <Compile Include="ViewModels\Core\HearingResult.cs" />
     <Compile Include="ViewModels\Core\TestResult.cs" />
     <Compile Include="ViewModels\MainPageViewModel.cs" />
+    <Compile Include="ViewModels\Results\BrowserPageViewModel.cs" />
+    <Compile Include="ViewModels\Results\ResultFileViewModel.cs" />
     <Compile Include="ViewModels\Results\TestResultsPageViewModel.cs" />
     <Compile Include="ViewModels\Start\AudiometerPageViewModel.cs" />
     <Compile Include="ViewModels\Start\NavigationItem.cs" />
@@ -126,9 +127,6 @@
     <Compile Include="ViewModels\SettingsPageViewModel.cs" />
     <Compile Include="ViewModels\Start\MainMenuPageViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
-    <Compile Include="Views\Core\ChannelSelectionPageView.xaml.cs">
-      <DependentUpon>ChannelSelectionPageView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\Core\HearingTestView.xaml.cs">
       <DependentUpon>HearingTestView.xaml</DependentUpon>
     </Compile>
@@ -137,6 +135,9 @@
     </Compile>
     <Compile Include="Views\MainPageView.xaml.cs">
       <DependentUpon>MainPageView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Results\BrowserPageView.xaml.cs">
+      <DependentUpon>BrowserPageView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Results\TestResultsPageView.xaml.cs">
       <DependentUpon>TestResultsPageView.xaml</DependentUpon>
@@ -183,10 +184,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Core\ChannelSelectionPageView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Views\Core\HearingTestView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -196,6 +193,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\MainPageView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Results\BrowserPageView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -246,10 +247,12 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\AddIcon.png" />
     <Content Include="Assets\AlignmentGrid.png" />
     <Content Include="Assets\ApplicationIcon.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Assets\ExitIcon.png" />
     <Content Include="Assets\SaveIcon.png" />
     <Content Include="Assets\Tiles\FlipCycleTileLarge.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

@@ -152,8 +152,8 @@
             else
             {
                 Deactivate();
-                var testResult = new TestResult(results[Channel.Left], results[Channel.Right]);
-                fileManager.FileName = "Result_" + DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss") + ".xml";
+                var testResult = new TestResult(results[Channel.Left], results[Channel.Right]) {MaxVolume = maxVolume};
+                fileManager.FileName = DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss") + ".result";
                 await fileManager.Save(testResult);
                 NavigationService.UriFor<TestResultsPageViewModel>().WithParam(x => x.ResultFileName, fileManager.FileName).Navigate();
                 return;

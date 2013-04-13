@@ -75,6 +75,17 @@
             }
         }
 
+        public class ResultItemTapped
+        {
+            private readonly string fileName;
+            public string FileName { get { return fileName; } }
+
+            public ResultItemTapped(string fileName)
+            {
+                this.fileName = fileName;
+            }
+        }
+
         public static class HearingTest
         {
             public class StartPlaying
