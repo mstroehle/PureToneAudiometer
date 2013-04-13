@@ -1,13 +1,11 @@
 ﻿namespace PureToneAudiometer.ViewModels.Core
 {
     using System.ComponentModel;
-    using Audio;
     using Caliburn.Micro;
 
     public class HostPageViewModel : ViewModelBase
     {
         public string PresetFileName { get; set; }
-        public Channel CurrentChannel { get; set; }
 
         public HearingTestViewModel HearingTestViewModel { get; private set; }
 
@@ -18,7 +16,6 @@
 
         protected override void OnActivate()
         {
-            HearingTestViewModel.CurrentChannel = CurrentChannel;
             HearingTestViewModel.PresetFileName = PresetFileName;
             ((IActivate)HearingTestViewModel).Activate();
         }

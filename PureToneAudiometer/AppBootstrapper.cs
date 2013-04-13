@@ -34,10 +34,11 @@
                 simpleContainer => IsolatedStorageSettings.ApplicationSettings);
             container.PerRequest<SettingsPageViewModel>();
             container.PerRequest<HearingTestViewModel>();
-            container.PerRequest<ChannelSelectionPageViewModel>();
+            //container.PerRequest<ChannelSelectionPageViewModel>();
             container.PerRequest<HostPageViewModel>();
             container.PerRequest<HearingTestView>();
             container.PerRequest<RecentPageViewModel>();
+            container.PerRequest<BrowserPageViewModel>();
             container.Handler<IStorageFolder>(simpleContainer => ApplicationData.Current.LocalFolder);
             container.PerRequest<IAsyncXmlFileManager, AsyncXmlFileManager>();
             container.PerRequest<TestResultsPageViewModel>();

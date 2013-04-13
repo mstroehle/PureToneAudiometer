@@ -1,6 +1,5 @@
 ﻿namespace PureToneAudiometer.ViewModels
 {
-    using System;
     using System.ComponentModel;
     using System.Linq;
     using System.Windows;
@@ -10,62 +9,14 @@
 
     public sealed class PresetsPageViewModel :  Conductor<ViewModelBase>.Collection.OneActive, 
                                                 IHandle<Events.PresetItemsSelectionChanged>, 
-                                                IHandle<Events.CanSavePreset>,
                                                 IHandle<Events.SelectNewPreset>
     {
         public PresetViewModel PresetViewModel { get; private set; }
         public SavedFilesViewModel SavedPresetsViewModel { get; private set; }
 
-        private Uri selectIcon;
-        private Uri deleteIcon;
-        private bool isSelectVisible;
         private bool isAppBarVisible;
-        private bool saveItems;
         private int index;
 
-        public Uri SelectIcon
-        {
-            get { return selectIcon; }
-            private set
-            {
-                if (Equals(value, selectIcon)) return;
-                selectIcon = value;
-                NotifyOfPropertyChange(() => SelectIcon);
-            }
-        }
-
-        public Uri DeleteIcon
-        {
-            get { return deleteIcon; }
-            set
-            {
-                if (Equals(value, deleteIcon)) return;
-                deleteIcon = value;
-                NotifyOfPropertyChange(() => DeleteIcon);
-            }
-        }
-
-        public Uri SaveIcon
-        {
-            get { return saveIcon; }
-            set
-            {
-                if (Equals(value, saveIcon)) return;
-                saveIcon = value;
-                NotifyOfPropertyChange(() => SaveIcon);
-            }
-        }
-
-        public bool IsSelectVisible
-        {
-            get { return isSelectVisible; }
-            set
-            {
-                if (value.Equals(isSelectVisible)) return;
-                isSelectVisible = value;
-                NotifyOfPropertyChange(() => IsSelectVisible);
-            }
-        }
 
         public bool IsAppBarVisible
         {
@@ -75,17 +26,6 @@
                 if (value.Equals(isAppBarVisible)) return;
                 isAppBarVisible = value;
                 NotifyOfPropertyChange(() => IsAppBarVisible);
-            }
-        }
-
-        public bool CanSaveItems
-        {
-            get { return saveItems; }
-            set
-            {
-                if (value.Equals(saveItems)) return;
-                saveItems = value;
-                NotifyOfPropertyChange(() => CanSaveItems);
             }
         }
 
@@ -100,41 +40,38 @@
             }
         }
 
-        private Uri saveIcon;
-
         private readonly IAsyncXmlFileManager manager;
-
+        private readonly IEventAggregator eventAggregator;
         public PresetsPageViewModel(IEventAggregator eventAggregator, IAsyncXmlFileManager manager, PresetViewModel preset, SavedFilesViewModel savedFiles)
         {
+            this.eventAggregator = eventAggregator;
             PresetViewModel = preset;
             SavedPresetsViewModel = savedFiles;
             this.manager = manager;
-            eventAggregator.Subscribe(this);
-            SelectIcon = new Uri("/Toolkit.Content/ApplicationBar.Select.png", UriKind.Relative);
-            DeleteIcon = new Uri("/Toolkit.Content/ApplicationBar.Delete.png", UriKind.Relative);
-            SaveIcon = new Uri("/Assets/SaveIcon.png", UriKind.Relative);
-            IsSelectVisible = true;
             IsAppBarVisible = true;
             
             ActivateItem(PresetViewModel);
         }
 
+        protected override void OnActivate()
+        {
+            eventAggregator.Subscribe(this);
+        }
+
+        protected override void OnDeactivate(bool close)
+        {
+            eventAggregator.Unsubscribe(this);
+        }
+
         public void SelectItems()
         {
-            IsSelectVisible = false;
-            PresetViewModel.IsSelectionEnabled = false;
+            PresetViewModel.IsSelectionEnabled = true;
         }
 
         public void DeleteItems()
         {
             PresetViewModel.DeleteSelectedItems();
-            SelectionEnded();
-        }
-
-        private void SelectionEnded()
-        {
-            PresetViewModel.IsSelectionEnabled = true;
-            IsSelectVisible = true;
+            PresetViewModel.IsSelectionEnabled = false;
         }
 
         public void LoadedPivotItem(PivotItemEventArgs eventArgs)
@@ -151,11 +88,16 @@
             }
         }
 
+        public void AddNewItem()
+        {
+            PresetViewModel.AddNewItem();
+        }
+
         public void BackKeyPressed(CancelEventArgs eventArgs)
         {
             if (PresetViewModel.IsSelectionEnabled)
             {
-                SelectionEnded();
+                PresetViewModel.IsSelectionEnabled = false;
                 eventArgs.Cancel = true;
             }
         }
@@ -166,7 +108,7 @@
                 SelectItems();
             else
             {
-                SelectionEnded();
+                PresetViewModel.IsSelectionEnabled = false;
             }
         }
 
@@ -195,11 +137,6 @@
             PresetViewModel.IsSelectionEnabled = false;
             PresetViewModel.PresetName = null;
             PresetViewModel.PresetItems.Clear();
-        }
-
-        public void Handle(Events.CanSavePreset message)
-        {
-            CanSaveItems = message.CanSave;
         }
 
         public async void Handle(Events.SelectNewPreset message)

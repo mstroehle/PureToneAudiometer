@@ -3,6 +3,7 @@
     using System;
     using Audio;
     using Caliburn.Micro;
+    using Microsoft.Phone.Shell;
 
     public partial class HearingTestView :  IHandle<Events.HearingTest.PitchGeneratorChanged>, 
                                             IHandle<Events.HearingTest.ChannelChanged>, 
@@ -18,6 +19,10 @@
             this.eventAggregator = eventAggregator;
             this.eventAggregator.Subscribe(this);
             InitializeComponent();
+            var progressIndicator = new ProgressIndicator();
+            SystemTray.ProgressIndicator = progressIndicator;
+            progressIndicator.IsIndeterminate = true;
+            
         }
 
         public void Handle(Events.HearingTest.PitchGeneratorChanged message)
@@ -47,6 +52,7 @@
         public void Handle(Events.HearingTest.StartPlaying message)
         {
             Media.Stop();
+            
             Media.SetSource(new PureToneSource(pitchGenerator, TimeSpan.FromMilliseconds(message.Preset.PitchDuration),
                                                new PauseDuration(
                                                    TimeSpan.FromMilliseconds(message.Preset.MinimumPauseDuration),

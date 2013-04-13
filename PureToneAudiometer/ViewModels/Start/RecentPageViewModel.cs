@@ -44,7 +44,7 @@
                 return;
 
             var item = (RecentItemViewModel)e.AddedItems[0];
-            NavigationService.UriFor<ChannelSelectionPageViewModel>().WithParam(x => x.PresetFileName, item.FilePath).Navigate();
+            NavigationService.UriFor<HostPageViewModel>().WithParam(x => x.PresetFileName, item.FilePath).Navigate();
             SelectedIndex = -1;
         }
     }

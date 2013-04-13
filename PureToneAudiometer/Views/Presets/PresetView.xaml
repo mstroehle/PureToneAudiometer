@@ -31,7 +31,7 @@
 -->
 
         <!--ContentPanel - place additional content here-->
-        <Button Name="AddNewItem" FontFamily="Segoe UI Symbol" HorizontalAlignment="Left">&#xE0B6;</Button>
+       <!-- <Button Name="AddNewItem" FontFamily="Segoe UI Symbol" HorizontalAlignment="Left">&#xE0B6;</Button>-->
         <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
@@ -39,12 +39,10 @@
             </Grid.RowDefinitions>
             <toolkit:LongListMultiSelector
                 Name="PresetItem"
-                Background="Transparent"
                 LayoutMode="List"
                 IsGroupingEnabled="False"
                 cal:Message.Attach="[Event SelectionChanged] = [Action SelectionChanged($eventArgs)]"
-                IsSelectionEnabled="{Binding IsSelectionEnabled}"
-                EnforceIsSelectionEnabled="{Binding IsEnforceSelectionEnabled}"
+                IsSelectionEnabled="{Binding IsSelectionEnabled, Mode=TwoWay}"
                 ItemsSource="{Binding PresetItems}">
                 <toolkit:LongListMultiSelector.ItemTemplate>
                     <DataTemplate>
@@ -73,7 +71,7 @@
             </toolkit:LongListMultiSelector>
             <StackPanel Grid.Row="2" Orientation="Horizontal">
                 <TextBlock Text="Preset name: " VerticalAlignment="Center"/>
-                <TextBox Name="PresetName" MinWidth="200"/>
+                <TextBox Name="PresetName" MinWidth="300" MaxWidth="300" TextWrapping="Wrap"/>
             </StackPanel>
         </Grid>
     </Grid>

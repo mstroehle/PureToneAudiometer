@@ -46,7 +46,6 @@
                 
                     
                 NotifyOfPropertyChange(() => IsSelectionEnabled);
-                IsEnforceSelectionEnabled = !isSelectionEnabled;
             }
         }
 
@@ -63,22 +62,22 @@
             }
         }
 
-        public bool IsEnforceSelectionEnabled
+        public bool CanSave
         {
-            get { return isEnforceSelectionEnabled; }
+            get { return canSave; }
             set
             {
-                if (value.Equals(isEnforceSelectionEnabled)) return;
-                isEnforceSelectionEnabled = value;
-                NotifyOfPropertyChange(() => IsEnforceSelectionEnabled);
+                if (value.Equals(canSave)) return;
+                canSave = value;
+                NotifyOfPropertyChange(() => CanSave);
             }
         }
 
         private readonly IEventAggregator eventAggregator;
 
-        private bool isEnforceSelectionEnabled;
         private IObservableCollection<PresetItemViewModel> presetItems;
         private string presetName;
+        private bool canSave;
 
         public PresetViewModel(INavigationService navigationService, IEventAggregator eventAggregator) : base(navigationService)
         {
@@ -96,7 +95,8 @@
                                          var invalidFileNameCharacters = Path.GetInvalidFileNameChars();
                                          var canSaveFlag = !string.IsNullOrEmpty(PresetName) &&
                                                            !PresetName.Any(x => invalidFileNameCharacters.Any(y => x == y));
-                                         eventAggregator.Publish(new Events.CanSavePreset(canSaveFlag));
+                                         CanSave = canSaveFlag;
+                                         //eventAggregator.Publish(new Events.CanSavePreset(canSaveFlag));
                                      });
         }
 

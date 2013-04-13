@@ -33,26 +33,33 @@
 
         <bindableAppBar:BindableAppBar 
             IsVisible="{Binding IsAppBarVisible}" 
-            Name="AppBar" 
-            BackgroundColor="White">
+            Name="AppBar" >
+ 
             <bindableAppBar:BindableAppBarButton
                 Name="SaveItems"
+                IsEnabled="{Binding PresetViewModel.CanSave}"
                 Text="Save"
-                IconUri="{Binding SaveIcon}"/>
+                IconUri="/Assets/SaveIcon.png"/>
+
+            <bindableAppBar:BindableAppBarButton
+                Name="AddNewItem"
+                Text="Add item"
+                IconUri="/Assets/AddIcon.png"/>
+
             <bindableAppBar:BindableAppBarButton
                     Name="SelectItems"
                     Text="Select"
-                    IconUri="{Binding SelectIcon}"
-                    Visibility="{Binding IsSelectVisible, Converter={StaticResource BooleanToVisibilityConverter}}"
+                    IconUri="/Toolkit.Content/ApplicationBar.Select.png"
+                    Visibility="{Binding PresetViewModel.IsSelectionEnabled, Converter={StaticResource InvertedVisibilityConverter}}"
                     />
             <bindableAppBar:BindableAppBarButton
                 Name="DeleteItems"
                 Text="Delete"
-                IconUri="{Binding DeleteIcon}"
-                Visibility="{Binding IsSelectVisible, Converter={StaticResource InvertedVisibilityConverter}}"
-                />
+                IconUri="/Toolkit.Content/ApplicationBar.Delete.png"
+                Visibility="{Binding PresetViewModel.IsSelectionEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
+                />            
             <bindableAppBar:BindableAppBarMenuItem Name="NewPreset"
-                                                   Text="New"/>
+                                                   Text="clear"/>
         </bindableAppBar:BindableAppBar>
     </Grid>
     
