@@ -18,17 +18,17 @@
 
     <!--LayoutRoot is the root grid where all page content is placed-->
     <Grid x:Name="LayoutRoot" Background="Transparent">
-<!--        <Grid.RowDefinitions>
+        <!--<Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        ~1~TitlePanel contains the name of the application and page title@1@
         <StackPanel Grid.Row="0" Margin="12,17,0,28">
+            
+
             <TextBlock Text="MY APPLICATION" Style="{StaticResource PhoneTextNormalStyle}"/>
             <TextBlock Text="start" Margin="9,-7,0,0" Style="{StaticResource PhoneTextTitle1Style}"/>
         </StackPanel>-->
-
         <!--ContentPanel - place additional content here-->
         <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
             <ListBox ItemsSource="{Binding NavigationItems}"
@@ -64,10 +64,6 @@
                                            FontSize="20"
                                            Text="{Binding Description}"/>
                             </Grid>
-                          <!--  <StackPanel Orientation="Horizontal">
-                                <TextBlock FontWeight="Bold" Text="{Binding Glyph}" FontFamily="Segoe UI Symbol" FontSize="32" Margin="3,3,7,3" VerticalAlignment="Center"/>
-                                <TextBlock FontWeight="Light" Text="{Binding NavigationName}" FontSize="38" VerticalAlignment="Center"/>
-                            </StackPanel>-->
                         </Grid>
                     </DataTemplate>
                 </ListBox.ItemTemplate>

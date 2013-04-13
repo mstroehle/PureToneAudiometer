@@ -6,10 +6,12 @@
     xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
     Foreground="{StaticResource PhoneForegroundBrush}"
     SupportedOrientations="PortraitOrLandscape" Orientation="Portrait"
+    toolkit:TiltEffect.IsTiltEnabled="True"
     mc:Ignorable="d"
     shell:SystemTray.IsVisible="True">
 
@@ -38,33 +40,57 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <StackPanel Orientation="Vertical">
-                <StackPanel Orientation="Horizontal">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,10">
                     <TextBlock Text="Preset:" Margin="0,0,3,0"/>
                     <TextBlock Name="PresetName"/>
                 </StackPanel>
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="Channel:" Margin="0,0,3,0"/>
-                    <TextBlock Name="CurrentChannel"/>
+                <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch">
+                    <TextBlock Text="Progress" Style="{StaticResource PhoneTextSmallStyle}" HorizontalAlignment="Center"/>
+                    <ProgressBar x:Name="ProgressBar" Maximum="100" Value="{Binding ProgressValue, Mode=TwoWay}"/>
+                </StackPanel>
+                <StackPanel>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                            <TextBlock Text="Left channel" Margin="0,0,3,0"/>
+                            <RadioButton Name="LeftChannel" IsChecked="{Binding IsLeftChannelChecked, Mode=TwoWay}" GroupName="ChannelGroup" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Orientation="Vertical" HorizontalAlignment="Center">
+                            <TextBlock Text="Right channel" Margin="0,0,3,0"/>
+                            <RadioButton Name="RightChannel" IsChecked="{Binding IsRightChannelChecked, Mode=TwoWay}" GroupName="ChannelGroup" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Grid>
                 </StackPanel>
             </StackPanel>
             
             <StackPanel Orientation="Horizontal" 
                         HorizontalAlignment="Center"
-                        Grid.Row="1">
+                        Grid.Row="1"
+                        Margin="0,10,0,20"
+                        >
+                <Button Name="PreviousFrequency" Margin="0,0,20,0" Style="{StaticResource RoundGlyphButton}">&#xE0E2;</Button>
                 <TextBlock Name="CurrentFrequency" Style="{StaticResource PhoneTextLargeStyle}"/>
                 <TextBlock Text="Hz" Style="{StaticResource PhoneTextLargeStyle}"/>
+                <Button Name="NextFrequency" Margin="20,0,0,0" Style="{StaticResource RoundGlyphButton}">&#xE0E3;</Button>
+
             </StackPanel>
             <StackPanel Orientation="Horizontal"
                         HorizontalAlignment="Center"
+                        Margin="0,5,0,20"
                         Grid.Row="2">
+                <RepeatButton Name="DecreaseVolume" Margin="20,0,0,0" Style="{StaticResource RoundGlyphButton}">&#xE0E5;</RepeatButton>
                 <TextBlock Name="CurrentVolume" Style="{StaticResource PhoneTextLargeStyle}"/>
                 <TextBlock Text="dB" Style="{StaticResource PhoneTextLargeStyle}"/>
+                <RepeatButton Name="IncreaseVolume" Margin="0,0,20,0" Style="{StaticResource RoundGlyphButton}">&#xE0E4;</RepeatButton>
             </StackPanel>
-            <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center">
+       <!--     <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center">
                 <Button Name="DecreaseVolume" Content="-5 dB"/>
                 <Button Name="IncreaseVolume" Content="+5 dB"/>
-            </StackPanel>
-            <StackPanel Grid.Row="4" HorizontalAlignment="Center">
+            </StackPanel>-->
+            <StackPanel Grid.Row="4" HorizontalAlignment="Center" Margin="20">
                 <StackPanel Orientation="Vertical">
                     <Button Name="Ok">
                         <Button.Content>
@@ -78,9 +104,12 @@
                     </Button>
                 </StackPanel>
             </StackPanel>
-            <Button Grid.Row="5" VerticalAlignment="Bottom" Name="Play"  Content="{Binding PlayContent}"/>
-
-            <MediaElement Name="Media" Volume="1" AutoPlay="True"/>
+            <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button Grid.Row="5" VerticalAlignment="Bottom" Name="Play"  Content="{Binding PlayContent}"/>
+                <Button Name="GoToResults" Grid.Row="5" Content="Finish"/>
+            </StackPanel>
+            
+            <MediaElement Name="Media" Volume="1" AutoPlay="False"/>
         </Grid>
     </Grid>
 

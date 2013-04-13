@@ -37,13 +37,18 @@
             this.storageFolder = storageFolder;
             this.recentManager = recentManager;
             this.eventAggregator = eventAggregator;
-            eventAggregator.Subscribe(this);
             SavedFileList = new BindableCollection<FileViewModel>();
         }
 
         protected override async void OnActivate()
         {
+            eventAggregator.Subscribe(this);
             await FetchFiles();
+        }
+
+        protected override void OnDeactivate(bool close)
+        {
+            eventAggregator.Unsubscribe(this);
         }
 
         private async Task FetchFiles()
@@ -107,7 +112,9 @@
                              };
             recentManager.FileName = "recent.xml";
             recentManager.UpdateOrAddToCollection(recent, model => model.FilePath == message.FileName);
-            NavigationService.UriFor<ChannelSelectionPageViewModel>().WithParam(x => x.PresetFileName, message.FileName).Navigate();
+            NavigationService.UriFor<HostPageViewModel>().WithParam(x => x.PresetFileName, message.FileName).Navigate();
+            
+            // NavigationService.UriFor<ChannelSelectionPageViewModel>().WithParam(x => x.PresetFileName, message.FileName).Navigate();
         }
     }
 }

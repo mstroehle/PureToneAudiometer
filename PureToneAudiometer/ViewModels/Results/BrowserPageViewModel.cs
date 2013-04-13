@@ -46,7 +46,6 @@
         public BrowserPageViewModel(IStorageFolder appStorageFolder, INavigationService navigationService, IAsyncXmlFileManager xmlFileManager, IEventAggregator eventAggregator) : base(navigationService)
         {
             this.eventAggregator = eventAggregator;
-            this.eventAggregator.Subscribe(this);
             ResultFiles = new BindableCollection<ResultFileViewModel>();
             selectedItems = new HashSet<ResultFileViewModel>();
             storageFolder = appStorageFolder;
@@ -55,6 +54,7 @@
 
         protected async override void OnActivate()
         {
+            eventAggregator.Subscribe(this);
             IsBusy = true;
             ResultFiles.Clear();   
             var files = await storageFolder.GetFilesAsync();
@@ -76,6 +76,11 @@
             IsBusy = false;
         }
 
+        protected override void OnDeactivate(bool close)
+        {
+            eventAggregator.Unsubscribe(this);
+        }
+
         public void EnableSelection()
         {
             SelectionEnabled = true;
@@ -86,15 +91,16 @@
             var result = MessageBox.Show("Are you sure you want to remove selected items?", "Removal confirmation",
                                       MessageBoxButton.OKCancel);
             
-            if (result != MessageBoxResult.Yes)
+            if (result != MessageBoxResult.OK)
                 return;
 
-            foreach (var item in selectedItems)
+            foreach (var item in selectedItems.ToList())
             {
                 ResultFiles.Remove(item);
                 var file = await storageFolder.GetFileAsync(item.FileName);
                 await file.DeleteAsync();
             }
+
             SelectionEnabled = false;
         }
 

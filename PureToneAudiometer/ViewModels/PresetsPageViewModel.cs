@@ -1,6 +1,5 @@
 ﻿namespace PureToneAudiometer.ViewModels
 {
-    using System;
     using System.ComponentModel;
     using System.Linq;
     using System.Windows;
@@ -15,11 +14,7 @@
         public PresetViewModel PresetViewModel { get; private set; }
         public SavedFilesViewModel SavedPresetsViewModel { get; private set; }
 
-        private Uri selectIcon;
-        private Uri deleteIcon;
-        private bool isSelectVisible;
         private bool isAppBarVisible;
-        private bool saveItems;
         private int index;
 
 
@@ -34,17 +29,6 @@
             }
         }
 
-/*        public bool CanSaveItems
-        {
-            get { return saveItems; }
-            set
-            {
-                if (value.Equals(saveItems)) return;
-                saveItems = value;
-                NotifyOfPropertyChange(() => CanSaveItems);
-            }
-        }*/
-
         public int Index
         {
             get { return index; }
@@ -56,19 +40,27 @@
             }
         }
 
-        private Uri saveIcon;
-
         private readonly IAsyncXmlFileManager manager;
-
+        private readonly IEventAggregator eventAggregator;
         public PresetsPageViewModel(IEventAggregator eventAggregator, IAsyncXmlFileManager manager, PresetViewModel preset, SavedFilesViewModel savedFiles)
         {
+            this.eventAggregator = eventAggregator;
             PresetViewModel = preset;
             SavedPresetsViewModel = savedFiles;
             this.manager = manager;
-            eventAggregator.Subscribe(this);
             IsAppBarVisible = true;
             
             ActivateItem(PresetViewModel);
+        }
+
+        protected override void OnActivate()
+        {
+            eventAggregator.Subscribe(this);
+        }
+
+        protected override void OnDeactivate(bool close)
+        {
+            eventAggregator.Unsubscribe(this);
         }
 
         public void SelectItems()
@@ -147,11 +139,6 @@
             PresetViewModel.PresetItems.Clear();
         }
 
-     /*   public void Handle(Events.CanSavePreset message)
-        {
-            CanSaveItems = message.CanSave;
-        }
-*/
         public async void Handle(Events.SelectNewPreset message)
         {
             var fullFileName = message.FileName + ".preset";
