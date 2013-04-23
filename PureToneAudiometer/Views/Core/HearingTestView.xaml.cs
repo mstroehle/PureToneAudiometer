@@ -1,9 +1,9 @@
 ﻿namespace PureToneAudiometer.Views.Core
 {
     using System;
+    using System.Threading.Tasks;
     using Audio;
     using Caliburn.Micro;
-    using Microsoft.Phone.Shell;
 
     public partial class HearingTestView :  IHandle<Events.HearingTest.PitchGeneratorChanged>, 
                                             IHandle<Events.HearingTest.ChannelChanged>, 
@@ -19,10 +19,19 @@
             this.eventAggregator = eventAggregator;
             this.eventAggregator.Subscribe(this);
             InitializeComponent();
-            var progressIndicator = new ProgressIndicator();
-            SystemTray.ProgressIndicator = progressIndicator;
-            progressIndicator.IsIndeterminate = true;
-            
+
+            DelayedStop();
+        }
+
+        /// <summary>
+        /// A workaround for MediaElement's playback. I have left it as 'AutoPlay=True' and then it's manually stopped after 2 seconds.
+        /// Starting the playback with 'AutoPlay=False' didn't want to work, for some reason...
+        /// </summary>
+        /// <returns></returns>
+        private async Task DelayedStop()
+        {
+            await Task.Delay(2000);
+            Media.Stop();
         }
 
         public void Handle(Events.HearingTest.PitchGeneratorChanged message)
@@ -31,6 +40,7 @@
             Media.SetSource(new PureToneSource(pitchGenerator, TimeSpan.FromSeconds(1),
                                                new PauseDuration(TimeSpan.FromMilliseconds(100),
                                                                  TimeSpan.FromMilliseconds(1200))));
+            Media.Pause();
         }
 
         public void Handle(Events.HearingTest.ChannelChanged message)
@@ -52,11 +62,11 @@
         public void Handle(Events.HearingTest.StartPlaying message)
         {
             Media.Stop();
-            
             Media.SetSource(new PureToneSource(pitchGenerator, TimeSpan.FromMilliseconds(message.Preset.PitchDuration),
                                                new PauseDuration(
                                                    TimeSpan.FromMilliseconds(message.Preset.MinimumPauseDuration),
                                                    TimeSpan.FromMilliseconds(message.Preset.MaximumPauseDuration))));
+
             Media.Play();
         }
 

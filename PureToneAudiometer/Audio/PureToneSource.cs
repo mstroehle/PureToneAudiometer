@@ -147,7 +147,7 @@
             streamDescription = new MediaStreamDescription(MediaStreamType.Audio, mediaStreamAttributes);
 
             timer.Start();
-
+            
             ReportOpenMediaCompleted(mediaSourceAttributes, new[] { streamDescription });
         }
 
@@ -188,6 +188,7 @@
         protected override void CloseMedia()
         {
             binaryWriter.Dispose();
+            timer.Stop();
             streamDescription = null;
         }
     }

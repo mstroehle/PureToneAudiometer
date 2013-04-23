@@ -122,6 +122,22 @@
                 if (value == currentChannel) return;
                 currentChannel = value;
                 NotifyOfPropertyChange(() => CurrentChannel);
+                eventAggregator.Publish(new Events.HearingTest.ChannelChanged(value));
+                switch (value)
+                {
+                    case Channel.Left: 
+                        pitchGenerator.MutedChannel = Channel.Right;
+                        break;
+                    case Channel.Right:
+                        pitchGenerator.MutedChannel = Channel.Left;
+                        break;
+                    case Channel.Both:
+                        pitchGenerator.MutedChannel = Channel.None;
+                        break;
+                    default:
+                        pitchGenerator.MutedChannel = Channel.Both;
+                        break;
+                }
             }
         }
 
@@ -173,15 +189,16 @@
         {
             this.settings = settings;
             this.pitchGenerator = pitchGenerator;
+            this.eventAggregator = eventAggregator;
+            this.fileManager = fileManager;
+
             IsPlaying = false;
             PlayContent = IsPlaying ? "Pause" : "Play";
             IsLeftChannelChecked = true;
             results = new Dictionary<Channel, ISet<HearingResult>>(2);
             results[Channel.Right] = new HashSet<HearingResult>(new FrequencyResultComparer());
-            results[Channel.Left] = new HashSet<HearingResult>(new FrequencyResultComparer());
-            this.eventAggregator = eventAggregator;
+            results[Channel.Left] = new HashSet<HearingResult>(new FrequencyResultComparer());            
             PresetItems = new ReadOnlyTraversableList<PresetItemViewModel>();
-            this.fileManager = fileManager;
         }
 
         public void Play()
@@ -220,9 +237,9 @@
         public async void GoToResults()
         {
             Deactivate();
-            var testresult = new TestResult(results[Channel.Left], results[Channel.Right]);
+            var testResult = new TestResult(results[Channel.Left], results[Channel.Right]) {MaxVolume = maxVolume};
             fileManager.FileName = DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss") + ".result";
-            await fileManager.Save(testresult);
+            await fileManager.Save(testResult);
             NavigationService.UriFor<TestResultsPageViewModel>().WithParam(x => x.ResultFileName, fileManager.FileName).Navigate();
         }
 
@@ -288,6 +305,7 @@
             fileManager.FileName = PresetFileName;
             eventAggregator.Publish(new Events.HearingTest.PitchGeneratorChanged(pitchGenerator));
             eventAggregator.Publish(new Events.HearingTest.ChannelChanged(CurrentChannel));
+            eventAggregator.Publish(new Events.HearingTest.StopPlaying());
 
             PresetItems = new ReadOnlyTraversableList<PresetItemViewModel>((await fileManager.GetCollection<PresetItemViewModel>()).ToList());
             ProgressMaximum = PresetItems.Count;
@@ -295,7 +313,7 @@
                 return;
 
             CurrentItem = PresetItems.Next();
-
+            pitchGenerator.Frequency = CurrentItem.Frequency;
             CurrentFrequency = CurrentItem.Frequency.ToString(CultureInfo.InvariantCulture);
             NotifyButtons();
         }

@@ -110,14 +110,16 @@
     <Compile Include="ViewModels\Core\HostPageViewModel.cs" />
     <Compile Include="ViewModels\Core\HearingResult.cs" />
     <Compile Include="ViewModels\Core\TestResult.cs" />
+    <Compile Include="ViewModels\IDialogBuilder.cs" />
     <Compile Include="ViewModels\MainPageViewModel.cs" />
     <Compile Include="ViewModels\Results\BrowserPageViewModel.cs" />
     <Compile Include="ViewModels\Results\ResultFileViewModel.cs" />
+    <Compile Include="ViewModels\Results\SaveResultViewModel.cs" />
     <Compile Include="ViewModels\Results\TestResultsPageViewModel.cs" />
     <Compile Include="ViewModels\Start\AudiometerPageViewModel.cs" />
     <Compile Include="ViewModels\Start\NavigationItem.cs" />
     <Compile Include="ViewModels\PresetsPageViewModel.cs" />
-    <Compile Include="ViewModels\Presets\AddItemDialogBuilder.cs" />
+    <Compile Include="ViewModels\DialogBuilder.cs" />
     <Compile Include="ViewModels\Presets\AddItemViewModel.cs" />
     <Compile Include="ViewModels\Presets\FileViewModel.cs" />
     <Compile Include="ViewModels\Presets\PresetItemViewModel.cs" />
@@ -139,6 +141,9 @@
     </Compile>
     <Compile Include="Views\Results\BrowserPageView.xaml.cs">
       <DependentUpon>BrowserPageView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Results\SaveResultView.xaml.cs">
+      <DependentUpon>SaveResultView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Results\TestResultsPageView.xaml.cs">
       <DependentUpon>TestResultsPageView.xaml</DependentUpon>
@@ -198,6 +203,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Results\BrowserPageView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Results\SaveResultView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

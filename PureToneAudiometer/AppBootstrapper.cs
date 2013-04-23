@@ -13,6 +13,8 @@
     using ViewModels.Results;
     using ViewModels.Start;
     using Views.Core;
+    using Views.Presets;
+    using Views.Results;
     using Windows.Storage;
 
     public class AppBootstrapper : PhoneBootstrapper
@@ -34,7 +36,6 @@
                 simpleContainer => IsolatedStorageSettings.ApplicationSettings);
             container.PerRequest<SettingsPageViewModel>();
             container.PerRequest<HearingTestViewModel>();
-            //container.PerRequest<ChannelSelectionPageViewModel>();
             container.PerRequest<HostPageViewModel>();
             container.PerRequest<HearingTestView>();
             container.PerRequest<RecentPageViewModel>();
@@ -43,6 +44,9 @@
             container.PerRequest<IAsyncXmlFileManager, AsyncXmlFileManager>();
             container.PerRequest<TestResultsPageViewModel>();
             container.RegisterPerRequest(typeof(AddItemViewModel), "AddItemViewModel", typeof(AddItemViewModel));
+            container.RegisterPerRequest(typeof(SaveResultViewModel), "SaveResultViewModel", typeof(SaveResultViewModel));
+            container.PerRequest<IDialogBuilder<AddItemView, AddItemViewModel>, DialogBuilder<AddItemView, AddItemViewModel>>();
+            container.PerRequest<IDialogBuilder<SaveResultView, SaveResultViewModel>, DialogBuilder<SaveResultView, SaveResultViewModel>>();
             container.Handler<IOscillator>(simpleContainer => new SineOscillator(-95, 100));
             container.Handler<IPitchGenerator>(
                 simpleContainer =>
