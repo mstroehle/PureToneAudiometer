@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Deployment xmlns="http://schemas.microsoft.com/windowsphone/2012/deployment" AppPlatformVersion="8.0">
   <DefaultLanguage xmlns="" code="en-US" />
-  <App xmlns="" ProductID="{88e78c89-78eb-4906-8256-9b2e4becca9f}" Title="PureToneAudiometer" RuntimeType="Silverlight" Version="1.0.0.0" Genre="apps.normal" Author="PureToneAudiometer author" Description="Sample description" Publisher="PureToneAudiometer" PublisherID="{49aa1f13-5e32-4d24-a786-0b5a334a0cd5}">
+  <App xmlns="" ProductID="{88e78c89-78eb-4906-8256-9b2e4becca9f}" Title="Pure Tone Audiometer" RuntimeType="Silverlight" Version="1.0.0.0" Genre="apps.normal" Author="PureToneAudiometer author" Description="Sample description" Publisher="PureToneAudiometer" PublisherID="{49aa1f13-5e32-4d24-a786-0b5a334a0cd5}">
     <IconPath IsRelative="true" IsResource="false">Assets\ApplicationIcon.png</IconPath>
     <Capabilities>
       <Capability Name="ID_CAP_NETWORKING" />

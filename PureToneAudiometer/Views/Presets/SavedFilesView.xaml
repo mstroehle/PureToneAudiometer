@@ -20,8 +20,16 @@
     <Grid x:Name="LayoutRoot" Background="Transparent">
         <!--ContentPanel - place additional content here-->
         <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <ProgressBar IsIndeterminate="True"
+                         Grid.Row="0"
+                         Visibility="{Binding IsBusy, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
             <ListBox 
                 micro:Message.Attach="[Event SelectionChanged] = [Action SelectionChanged($eventArgs)]"
+                Grid.Row="1"
                 ItemsSource="{Binding SavedFileList}">
                 <ListBox.ItemTemplate>
                     <DataTemplate>

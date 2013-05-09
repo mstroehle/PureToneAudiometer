@@ -5,12 +5,13 @@
     using System.Linq;
     using System.Windows;
     using System.Windows.Controls;
+    using System.Windows.Input;
     using Caliburn.Micro;
     using Core;
     using Windows.Storage;
     using System;
 
-    public class BrowserPageViewModel : ViewModelBase, IHandle<Events.ResultItemTapped>
+    public class BrowserPageViewModel : ViewModelBase
     {
         public IObservableCollection<ResultFileViewModel> ResultFiles { get; private set; }
 
@@ -65,13 +66,13 @@
                 var modificationDate = (await storageFile.GetBasicPropertiesAsync()).DateModified;
                 fileManager.FileName = storageFile.Name;
                 var testResult = await fileManager.Get<TestResult>();
-                ResultFiles.Add(new ResultFileViewModel(eventAggregator)
-                                       {
-                                           CreationDate = storageFile.DateCreated.DateTime,
-                                           LastChangedDate = modificationDate.DateTime,
-                                           FileName = storageFile.Name,
-                                           Description = testResult.Description
-                                       });
+                ResultFiles.Add(new ResultFileViewModel
+                                    {
+                                        CreationDate = storageFile.DateCreated.DateTime,
+                                        LastChangedDate = modificationDate.DateTime,
+                                        FileName = storageFile.Name,
+                                        Description = testResult.Description
+                                    });
             }
             IsBusy = false;
         }
@@ -129,9 +130,21 @@
             }
         }
 
-        public void Handle(Events.ResultItemTapped message)
+        public void Tapped(GestureEventArgs eventArgs)
         {
-            NavigationService.UriFor<TestResultsPageViewModel>().WithParam(x => x.ResultFileName, message.FileName).Navigate();
+            if (SelectionEnabled)
+            {
+                eventArgs.Handled = true;
+                return;
+            }
+
+            var viewModel = ((FrameworkElement) eventArgs.OriginalSource).DataContext as ResultFileViewModel;
+            
+            if (viewModel == null)
+                return;
+
+            eventArgs.Handled = true;
+            NavigationService.UriFor<TestResultsPageViewModel>().WithParam(x => x.ResultFileName, viewModel.FileName).Navigate();
         }
     }
 }

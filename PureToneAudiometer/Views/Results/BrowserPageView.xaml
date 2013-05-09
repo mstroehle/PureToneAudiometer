@@ -27,25 +27,36 @@
 
         <!--TitlePanel contains the name of the application and page title-->
         <StackPanel Grid.Row="0" Margin="12,17,0,28">
-            <!--<TextBlock Text="MY APPLICATION" Style="{StaticResource PhoneTextNormalStyle}"/>-->
-            <TextBlock Text="results browser" Margin="9,-7,0,0" Style="{StaticResource PhoneTextTitle1Style}"/>
+            <TextBlock Text="saved results" Margin="9,-7,0,0" Style="{StaticResource PhoneTextTitle1Style}"/>
         </StackPanel>
 
         <!--ContentPanel - place additional content here-->
         <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <ProgressBar Grid.Row="0" 
+                         IsIndeterminate="True"
+                         Visibility="{Binding IsBusy, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
             <toolkit:LongListMultiSelector ItemsSource="{Binding ResultFiles}"
-                                    IsGroupingEnabled="False"
-                                    micro:Message.Attach="[Event SelectionChanged] = [Action SelectionChanged($eventArgs)]"
-                                    IsSelectionEnabled="{Binding SelectionEnabled, Mode=TwoWay}"
-                                    LayoutMode="List">
+                                           IsGroupingEnabled="False"
+                                           Grid.Row="1"
+                                           micro:Message.Attach="[Event SelectionChanged] = [Action SelectionChanged($eventArgs)]; [Event DoubleTap] = [Action Tapped($eventArgs)]"
+                                           IsSelectionEnabled="{Binding SelectionEnabled, Mode=TwoWay}"
+                                           LayoutMode="List">
                 <toolkit:LongListMultiSelector.ItemTemplate>
                     <DataTemplate>
-                        <Grid Margin="0,5,0,5" micro:Message.Attach="[Event Tap] = [Action Tapped]">
+                        <Grid Margin="0,5,0,5" >
                         <Border BorderBrush="{StaticResource PhoneForegroundBrush}">
                             <StackPanel Orientation="Vertical">
-                                <TextBlock TextWrapping="Wrap" 
+                                <StackPanel Orientation="Horizontal">
+                                        <TextBlock TextWrapping="Wrap" 
                                            Text="{Binding Description}" 
+                                           Margin="5,0,0,0"
                                            Style="{StaticResource PhoneTextLargeStyle}"/>
+                                    </StackPanel>
+                                
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="Modified"
                                                Width="100"

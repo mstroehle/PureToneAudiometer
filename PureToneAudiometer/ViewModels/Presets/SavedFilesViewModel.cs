@@ -25,11 +25,23 @@
             }
         }
 
+        public bool IsBusy
+        {
+            get { return isBusy; }
+            private set
+            {
+                if (value.Equals(isBusy)) return;
+                isBusy = value;
+                NotifyOfPropertyChange(() => IsBusy);
+            }
+        }
+
         private readonly IEventAggregator eventAggregator;
 
         private readonly IAsyncXmlFileManager recentManager;
 
         private readonly IStorageFolder storageFolder;
+        private bool isBusy;
 
         public SavedFilesViewModel(IEventAggregator eventAggregator, IStorageFolder storageFolder, INavigationService navigationService, IAsyncXmlFileManager recentManager)
             : base(navigationService)
@@ -53,6 +65,8 @@
 
         private async Task FetchFiles()
         {
+            IsBusy = true;
+
             SavedFileList.Clear();
 
             var allFiles = await storageFolder.GetFilesAsync();
@@ -63,6 +77,7 @@
                 PresetName = Path.GetFileNameWithoutExtension(x.Name),
                 CreationDate = x.DateCreated.DateTime
             }));
+            IsBusy = false;
         }
 
         public async void Handle(Events.PresetScheduledForDeletion message)
@@ -113,8 +128,6 @@
             recentManager.FileName = "recent.xml";
             recentManager.UpdateOrAddToCollection(recent, model => model.FilePath == message.FileName);
             NavigationService.UriFor<HostPageViewModel>().WithParam(x => x.PresetFileName, message.FileName).Navigate();
-            
-            // NavigationService.UriFor<ChannelSelectionPageViewModel>().WithParam(x => x.PresetFileName, message.FileName).Navigate();
         }
     }
 }

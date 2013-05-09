@@ -10,6 +10,8 @@ using Microsoft.Phone.Shell;
 
 namespace PureToneAudiometer.Views.Results
 {
+    using System.Windows.Input;
+
     public partial class BrowserPageView : PhoneApplicationPage
     {
         public BrowserPageView()
