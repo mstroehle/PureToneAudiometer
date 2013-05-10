@@ -91,6 +91,7 @@
                 Text="Delete"
                 IconUri="/Toolkit.Content/ApplicationBar.Delete.png"
                 Visibility="{Binding SelectionEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            <bindableAppBar:BindableAppBarMenuItem Name="GoToLiveApi" Text="upload to skydrive"/>
         </bindableAppBar:BindableAppBar>
     </Grid>
 

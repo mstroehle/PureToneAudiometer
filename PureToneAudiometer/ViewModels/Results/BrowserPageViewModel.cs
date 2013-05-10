@@ -43,10 +43,10 @@
         private readonly IAsyncXmlFileManager fileManager;
         private bool selectionEnabled;
         private readonly ISet<ResultFileViewModel> selectedItems;
-        private readonly IEventAggregator eventAggregator;
-        public BrowserPageViewModel(IStorageFolder appStorageFolder, INavigationService navigationService, IAsyncXmlFileManager xmlFileManager, IEventAggregator eventAggregator) : base(navigationService)
+        public BrowserPageViewModel(IStorageFolder appStorageFolder, 
+            INavigationService navigationService, 
+            IAsyncXmlFileManager xmlFileManager) : base(navigationService)
         {
-            this.eventAggregator = eventAggregator;
             ResultFiles = new BindableCollection<ResultFileViewModel>();
             selectedItems = new HashSet<ResultFileViewModel>();
             storageFolder = appStorageFolder;
@@ -55,7 +55,6 @@
 
         protected async override void OnActivate()
         {
-            eventAggregator.Subscribe(this);
             IsBusy = true;
             ResultFiles.Clear();   
             var files = await storageFolder.GetFilesAsync();
@@ -75,11 +74,6 @@
                                     });
             }
             IsBusy = false;
-        }
-
-        protected override void OnDeactivate(bool close)
-        {
-            eventAggregator.Unsubscribe(this);
         }
 
         public void EnableSelection()
@@ -145,6 +139,11 @@
 
             eventArgs.Handled = true;
             NavigationService.UriFor<TestResultsPageViewModel>().WithParam(x => x.ResultFileName, viewModel.FileName).Navigate();
+        }
+
+        public void GoToLiveApi()
+        {
+            NavigationService.UriFor<Live.MainLivePageViewModel>().WithParam(x => x.CombinedPath, string.Join(";", selectedItems.Select(x => x.FileName))).Navigate();
         }
     }
 }

@@ -9,6 +9,7 @@
     using Caliburn.Micro.BindableAppBar;
     using ViewModels;
     using ViewModels.Core;
+    using ViewModels.Live;
     using ViewModels.Presets;
     using ViewModels.Results;
     using ViewModels.Start;
@@ -39,9 +40,11 @@
             container.PerRequest<HostPageViewModel>();
             container.PerRequest<HearingTestView>();
             container.PerRequest<RecentPageViewModel>();
+            container.PerRequest<MainLivePageViewModel>();
             container.PerRequest<BrowserPageViewModel>();
             container.Handler<IStorageFolder>(simpleContainer => ApplicationData.Current.LocalFolder);
             container.PerRequest<IAsyncXmlFileManager, AsyncXmlFileManager>();
+            container.PerRequest<ISkyDriveUpload, SkyDriveUpload>();
             container.PerRequest<TestResultsPageViewModel>();
             container.RegisterPerRequest(typeof(AddItemViewModel), "AddItemViewModel", typeof(AddItemViewModel));
             container.RegisterPerRequest(typeof(SaveResultViewModel), "SaveResultViewModel", typeof(SaveResultViewModel));
