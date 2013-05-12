@@ -45,7 +45,7 @@
                             </toolkit:ContextMenuService.ContextMenu>
                             <StackPanel>
                                 <TextBlock Text="{Binding PresetName}" FontSize="28"/>
-                                <TextBlock Text="{Binding CreationDate}" FontSize="18"/>
+                                <TextBlock Text="{Binding CreationDate, StringFormat='yyyy/MM/dd HH:mm:ss'}" FontSize="18"/>
                             </StackPanel>
                         </Grid>
                     </DataTemplate>

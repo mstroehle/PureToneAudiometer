@@ -83,27 +83,61 @@
             {
                 var message = string.Empty;
                 int integerTest;
-                switch (columnName)
+                int minimumPause;
+                int maximumPause;
+                if(columnName == Property.Name(() => Frequency))
                 {
-                    case "Frequency":
-                        if (string.IsNullOrEmpty(Frequency) || !int.TryParse(Frequency, out integerTest))
-                            message = "Empty or invalid frequency value";
-                        break;
-                    case "ToneDuration":
-                        if (string.IsNullOrEmpty(ToneDuration) || !int.TryParse(ToneDuration, out integerTest))
-                            message = "Empty or invalid tone duration";
-                        break;
-                    case "MinimumPauseDuration":
-                        if (string.IsNullOrEmpty(MinimumPauseDuration) ||
-                            !int.TryParse(MinimumPauseDuration, out integerTest))
-                            message = "Empty or invalid minimum pause duration";
-                        break;
-                    case "MaximumPauseDuration":
-                        if (string.IsNullOrEmpty(MaximumPauseDuration) ||
-                            !int.TryParse(MaximumPauseDuration, out integerTest))
-                            message = "Empty or invalid maximum pause duration";
-                        break;
-
+                    if (string.IsNullOrEmpty(Frequency))
+                    {
+                        message = "Empty frequency value";
+                    }
+                    else if (!int.TryParse(Frequency, out integerTest))
+                    {
+                        message = "Invalid frequency value";
+                    }
+                }
+                if(columnName == Property.Name(() => ToneDuration))
+                {
+                    if (string.IsNullOrEmpty(ToneDuration))
+                    {
+                        message = "Empty tone duration";
+                    }
+                    else if (!int.TryParse(ToneDuration, out integerTest))
+                    {
+                        message = "Invalid tone duration";
+                    }
+                }
+                if (columnName == Property.Name(() => MinimumPauseDuration))
+                {
+                    if (string.IsNullOrEmpty(MinimumPauseDuration))
+                        message = "Empty minimum pause duration";
+                    else if (!int.TryParse(MinimumPauseDuration, out minimumPause))
+                    {
+                        message = "Invalid minimum pause duration";
+                    }
+                    else if (int.TryParse(MaximumPauseDuration, out maximumPause))
+                    {
+                        if (minimumPause >= maximumPause)
+                        {
+                            message = "Minimum pause can't be shorter than or equal to maximum pause";
+                        }
+                    }
+                }
+                if (columnName == Property.Name(() => MaximumPauseDuration))
+                {
+                    if (string.IsNullOrEmpty(MaximumPauseDuration))
+                        message = "Empty maximum pause duration";
+                    else if (!int.TryParse(MaximumPauseDuration, out maximumPause))
+                    {
+                        message = "Invalid maximum pause duration";
+                    }
+                    else if (int.TryParse(MinimumPauseDuration, out minimumPause))
+                    {
+                        if (maximumPause <= minimumPause)
+                        {
+                            message = "Maximum pause can't be shorter than or equal to minimum pause";
+                        }
+                    }
                 }
 
                 if (string.IsNullOrEmpty(message))

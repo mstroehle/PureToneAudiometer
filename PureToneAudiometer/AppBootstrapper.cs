@@ -7,6 +7,7 @@
     using Audio;
     using Caliburn.Micro;
     using Caliburn.Micro.BindableAppBar;
+    using Microsoft.Phone.Controls;
     using ViewModels;
     using ViewModels.Core;
     using ViewModels.Presets;
@@ -25,15 +26,14 @@
         {
             container = new PhoneContainer(RootFrame);
             container.Singleton<IEventAggregator, EventAggregator>();
-            container.PerRequest<AudiometerPageViewModel>();
+            container.PerRequest<HelpPageViewModel>();
             container.PerRequest<PresetsPageViewModel>();
             container.PerRequest<PresetViewModel>();
             container.PerRequest<SavedFilesViewModel>();
             container.PerRequest<MainMenuPageViewModel>();
           
             container.PerRequest<MainPageViewModel>();
-            container.Handler<IDictionary<string, object>>(
-                simpleContainer => IsolatedStorageSettings.ApplicationSettings);
+            container.Handler<ISettings>(simpleContainer => new Settings(IsolatedStorageSettings.ApplicationSettings));
             container.PerRequest<SettingsPageViewModel>();
             container.PerRequest<HearingTestViewModel>();
             container.PerRequest<HostPageViewModel>();
@@ -48,8 +48,8 @@
             container.Handler<ISkyDriveUpload>(
                 simpleContainer =>
                 new SkyDriveUpload((IStorageFolder) simpleContainer.GetInstance(typeof (IStorageFolder), null),
-                                   (IDictionary<string, object>) simpleContainer.GetInstance(typeof (IDictionary<string, object>), null)));
-            container.PerRequest<TestResultsPageViewModel>();
+                                   (ISettings) simpleContainer.GetInstance(typeof (ISettings), null)));
+            container.PerRequest<ResultsPageViewModel>();
             container.RegisterPerRequest(typeof(AddItemViewModel), "AddItemViewModel", typeof(AddItemViewModel));
             container.RegisterPerRequest(typeof(SaveResultViewModel), "SaveResultViewModel", typeof(SaveResultViewModel));
             container.PerRequest<IDialogBuilder<AddItemView, AddItemViewModel>, DialogBuilder<AddItemView, AddItemViewModel>>();
@@ -96,6 +96,11 @@
         protected override void BuildUp(object instance)
         {
             container.BuildUp(instance);
+        }
+
+        protected override PhoneApplicationFrame CreatePhoneApplicationFrame()
+        {
+            return new TransitionFrame();
         }
     }
 }

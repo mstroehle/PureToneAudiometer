@@ -124,7 +124,7 @@
             {
                 var modificationDate = (await storageFile.GetBasicPropertiesAsync()).DateModified;
                 fileManager.FileName = storageFile.Name;
-                var testResult = await fileManager.Get<TestResult>();
+                var testResult = await fileManager.Get<HearingTestResult>();
                 ResultFiles.Add(new ResultFileViewModel
                                     {
                                         CreationDate = storageFile.DateCreated.DateTime,
@@ -209,7 +209,7 @@
                 return;
 
             eventArgs.Handled = true;
-            NavigationService.UriFor<TestResultsPageViewModel>().WithParam(x => x.ResultFileName, viewModel.FileName).Navigate();
+            NavigationService.UriFor<ResultsPageViewModel>().WithParam(x => x.ResultFileName, viewModel.FileName).Navigate();
         }
 
         public async void UploadToSkydrive()
@@ -222,8 +222,22 @@
             {
                 Title = "Upload completed",
                 TextOrientation = Orientation.Horizontal,
+                Message = "Tap here for basic summary",
                 TextWrapping = TextWrapping.Wrap
             };
+            toast.Completed += (sender, args) =>
+                                   {
+                                       if (args.PopUpResult == PopUpResult.Ok)
+                                       {
+                                           var uploadSummary = skyDriveUpload.UploadSummary;
+                                           var message = string.Format("Data files transferred: {0} ({1:0.00} kB)", uploadSummary.DataFilesTransferred, uploadSummary.DataKilobytesTransferred);
+                                           if (skyDriveUpload.UploadSummary.ChartFilesTransferred > 0)
+                                               message += string.Format(", chart files transferred: {0} ({1:0.00} kB)",
+                                                                        uploadSummary.ChartFilesTransferred,
+                                                                        uploadSummary.ChartKilobytesTransferred);
+                                           MessageBox.Show(message, "Summary", MessageBoxButton.OK);
+                                       }
+                                   };
             toast.Show();
         }
 

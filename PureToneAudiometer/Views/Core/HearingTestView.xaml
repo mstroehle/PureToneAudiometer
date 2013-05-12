@@ -10,11 +10,32 @@
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
     Foreground="{StaticResource PhoneForegroundBrush}"
-    SupportedOrientations="PortraitOrLandscape" Orientation="Portrait"
+    SupportedOrientations="Portrait" Orientation="Portrait"
     toolkit:TiltEffect.IsTiltEnabled="True"
     mc:Ignorable="d"
     shell:SystemTray.IsVisible="True">
 
+    <toolkit:TransitionService.NavigationInTransition>
+        <toolkit:NavigationInTransition>
+            <toolkit:NavigationInTransition.Backward>
+                <toolkit:TurnstileFeatherTransition Mode="BackwardIn" BeginTime="0:0:0.2"/>
+            </toolkit:NavigationInTransition.Backward>
+            <toolkit:NavigationInTransition.Forward>
+                <toolkit:TurnstileFeatherTransition Mode="ForwardIn" BeginTime="0:0:0.2"/>
+            </toolkit:NavigationInTransition.Forward>
+        </toolkit:NavigationInTransition>
+    </toolkit:TransitionService.NavigationInTransition>
+    <toolkit:TransitionService.NavigationOutTransition>
+        <toolkit:NavigationOutTransition>
+            <toolkit:NavigationOutTransition.Backward>
+                <toolkit:TurnstileFeatherTransition Mode="BackwardOut" BeginTime="0:0:0.2"/>
+            </toolkit:NavigationOutTransition.Backward>
+            <toolkit:NavigationOutTransition.Forward>
+                <toolkit:TurnstileFeatherTransition Mode="ForwardOut" BeginTime="0:0:0.2"/>
+            </toolkit:NavigationOutTransition.Forward>
+        </toolkit:NavigationOutTransition>
+    </toolkit:TransitionService.NavigationOutTransition>
+    
     <!--LayoutRoot is the root grid where all page content is placed-->
     <Grid x:Name="LayoutRoot" Background="Transparent">
         <Grid.RowDefinitions>
@@ -24,7 +45,7 @@
 
         <!--TitlePanel contains the name of the application and page title-->
         <StackPanel Grid.Row="0" Margin="5,5,0,10">
-            <!--<TextBlock Text="MY APPLICATION" Style="{StaticResource PhoneTextNormalStyle}"/>-->
+            <TextBlock Text="PURE TONE AUDIOMETER" Style="{StaticResource PhoneTextNormalStyle}"/>
             <TextBlock Text="hearing test" Margin="9,-7,0,0" Style="{StaticResource PhoneTextTitle1Style}"/>
         </StackPanel>
 
@@ -41,12 +62,18 @@
             </Grid.RowDefinitions>
             <StackPanel Orientation="Vertical"
                         Margin="0,0,0,20">
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,10">
-                    <TextBlock Text="Preset:" Margin="0,0,3,0"/>
+                <StackPanel Orientation="Horizontal" 
+                            HorizontalAlignment="Center"
+                            Margin="0,0,0,10">
+                    <TextBlock Text="Preset:" 
+                               Margin="0,0,3,0"/>
                     <TextBlock Name="PresetName"/>
                 </StackPanel>
-                <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" Margin="0,10,0,10">
-                    <TextBlock Text="Progress" Style="{StaticResource PhoneTextSmallStyle}" HorizontalAlignment="Center"/>
+                <StackPanel Orientation="Vertical"
+                            HorizontalAlignment="Stretch"
+                            Margin="0,10,0,10">
+                    <TextBlock Text="Progress" Style="{StaticResource PhoneTextSmallStyle}"
+                               HorizontalAlignment="Center"/>
                     <ProgressBar x:Name="ProgressBar"
                                  Maximum="100" 
                                  Height="10"
@@ -59,13 +86,24 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
-                            <TextBlock Text="Left channel" Margin="0,0,3,0"/>
-                            <RadioButton Name="LeftChannel" IsChecked="{Binding IsLeftChannelChecked, Mode=TwoWay}" GroupName="ChannelGroup" HorizontalAlignment="Center"/>
+                        <StackPanel Orientation="Vertical"
+                                    HorizontalAlignment="Center">
+                            <TextBlock Text="Left channel"
+                                       Margin="0,0,3,0"/>
+                            <RadioButton Name="LeftChannel" 
+                                         IsChecked="{Binding IsLeftChannelChecked, Mode=TwoWay}" 
+                                         GroupName="ChannelGroup" 
+                                         HorizontalAlignment="Center"/>
                         </StackPanel>
-                        <StackPanel Grid.Column="1" Orientation="Vertical" HorizontalAlignment="Center">
-                            <TextBlock Text="Right channel" Margin="0,0,3,0"/>
-                            <RadioButton Name="RightChannel" IsChecked="{Binding IsRightChannelChecked, Mode=TwoWay}" GroupName="ChannelGroup" HorizontalAlignment="Center"/>
+                        <StackPanel Grid.Column="1"
+                                    Orientation="Vertical" 
+                                    HorizontalAlignment="Center">
+                            <TextBlock Text="Right channel" 
+                                       Margin="0,0,3,0"/>
+                            <RadioButton Name="RightChannel" 
+                                         IsChecked="{Binding IsRightChannelChecked, Mode=TwoWay}"
+                                         GroupName="ChannelGroup" 
+                                         HorizontalAlignment="Center"/>
                         </StackPanel>
                     </Grid>
                 </StackPanel>
@@ -84,7 +122,6 @@
                 <Button Grid.Row="0" 
                         Grid.Column="0"
                         Name="PreviousFrequency" 
-                        
                         Style="{StaticResource RoundGlyphButton}">&#xE0E2;</Button>
                 <StackPanel Grid.Row="0" 
                             Grid.Column="1"
@@ -101,8 +138,6 @@
                         Name="NextFrequency" 
                         Style="{StaticResource RoundGlyphButton}">&#xE0E3;</Button>
 
-              
-                
                 <RepeatButton Grid.Row="1"
                               Grid.Column="0"
                               Name="DecreaseVolume" 
@@ -122,15 +157,32 @@
                               Grid.Column="2"
                               Style="{StaticResource RoundGlyphButton}">&#xE0E4;</RepeatButton>
             </Grid>
-            <StackPanel Grid.Row="4" HorizontalAlignment="Center" Margin="20">
+            <StackPanel Grid.Row="4" 
+                        HorizontalAlignment="Center" 
+                        Margin="20">
                 <StackPanel Orientation="Vertical">
-                    <Button Name="Ok" Content="OK"/>
-                        
+                    <Button Name="Ok" 
+                            FontSize="38"
+                            FontFamily="Segoe UI Symbol"
+                            Height="75"
+                            Width="75"
+                            Style="{StaticResource RoundGlyphButton}">
+                        &#xE19F;
+                    </Button>
                 </StackPanel>
             </StackPanel>
-            <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Center">
-                <Button Grid.Row="5" VerticalAlignment="Bottom" Name="Play"  Content="{Binding PlayContent}"/>
-                <Button Name="GoToResults" Grid.Row="5" Content="Finish"/>
+            <StackPanel Grid.Row="5" 
+                        Orientation="Horizontal" 
+                        HorizontalAlignment="Center">
+                <Button Grid.Row="5" 
+                        Width="120"
+                        Name="Play" 
+                        FontFamily="Segoe UI Symbol"
+                        Content="{Binding PlayContent}"/>
+                <Button Name="GoToResults"
+                        Width="120" 
+                        Grid.Row="5"
+                        Content="Finish"/>
             </StackPanel>
             
             <MediaElement Name="Media" Volume="1" AutoPlay="True"/>

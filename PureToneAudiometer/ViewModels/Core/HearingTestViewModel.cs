@@ -12,6 +12,9 @@
 
     public class HearingTestViewModel : ViewModelBase
     {
+        private const string PlayGlyph = "";
+        private const string PauseGlyph = "";
+
         public string PresetFileName
         {
             get { return presetFileName; }
@@ -151,7 +154,17 @@
                 NotifyOfPropertyChange(() => PlayContent);
             }
         }
-        public bool IsPlaying { get; set; }
+
+        public bool IsPlaying
+        {
+            get { return isPlaying; }
+            set 
+            { 
+                isPlaying = value;
+                PlayContent = value ? PauseGlyph : PlayGlyph;
+                NotifyOfPropertyChange(() => PlayContent);
+            }
+        }
 
         private readonly IEventAggregator eventAggregator;
 
@@ -171,7 +184,7 @@
             }
         }
 
-        private readonly IDictionary<string, object> settings;
+        private readonly ISettings settings;
         private int maxVolume;
         private string presetFileName;
         private bool isLeftChannelChecked;
@@ -180,10 +193,11 @@
         private PresetItemViewModel currentItem;
         private int progressMaximum;
         private int progressValue;
+        private bool isPlaying;
 
         public HearingTestViewModel(INavigationService navigationService, 
             IAsyncXmlFileManager fileManager, 
-            IDictionary<string, object> settings,
+            ISettings settings,
             IEventAggregator eventAggregator, 
             IPitchGenerator pitchGenerator) : base(navigationService)
         {
@@ -193,7 +207,6 @@
             this.fileManager = fileManager;
 
             IsPlaying = false;
-            PlayContent = IsPlaying ? "Pause" : "Play";
             IsLeftChannelChecked = true;
             results = new Dictionary<Channel, ISet<HearingResult>>(2);
             results[Channel.Right] = new HashSet<HearingResult>(new FrequencyResultComparer());
@@ -204,8 +217,6 @@
         public void Play()
         {
             IsPlaying = !IsPlaying;
-
-            PlayContent = IsPlaying ? "Pause" : "Play";
 
             if(IsPlaying && CurrentItem != null)
                 eventAggregator.Publish(new Events.HearingTest.StartPlaying(CurrentItem));
@@ -218,6 +229,7 @@
         public void Ok()
         {
             eventAggregator.Publish(new Events.HearingTest.StopPlaying());
+            IsPlaying = false;
             var result = new HearingResult
                              {
                                  Frequency = CurrentItem.Frequency,
@@ -237,10 +249,10 @@
         public async void GoToResults()
         {
             Deactivate();
-            var testResult = new TestResult(results[Channel.Left], results[Channel.Right]) {MaxVolume = maxVolume};
+            var testResult = new HearingTestResult(results[Channel.Left], results[Channel.Right]) {MaxVolume = maxVolume};
             fileManager.FileName = DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss") + ".result";
             await fileManager.Save(testResult);
-            NavigationService.UriFor<TestResultsPageViewModel>().WithParam(x => x.ResultFileName, fileManager.FileName).Navigate();
+            NavigationService.UriFor<ResultsPageViewModel>().WithParam(x => x.ResultFileName, fileManager.FileName).Navigate();
         }
 
         private void ChangeVolume(int delta)
@@ -268,6 +280,7 @@
         public void NextFrequency()
         {
             eventAggregator.Publish(new Events.HearingTest.StopPlaying());
+            IsPlaying = false;
 
             CurrentItem = PresetItems.Next();
 
@@ -275,6 +288,7 @@
             CurrentFrequency = CurrentItem.Frequency.ToString(CultureInfo.InvariantCulture);
             MuteVolume();
             eventAggregator.Publish(new Events.HearingTest.StartPlaying(CurrentItem));
+            IsPlaying = true;
         }
 
         public bool CanPreviousFrequency
@@ -285,6 +299,7 @@
         public void PreviousFrequency()
         {
             eventAggregator.Publish(new Events.HearingTest.StopPlaying());
+            IsPlaying = false;
 
             CurrentItem = PresetItems.Previous();
 
@@ -292,13 +307,14 @@
             CurrentFrequency = CurrentItem.Frequency.ToString(CultureInfo.InvariantCulture);
             MuteVolume();
             eventAggregator.Publish(new Events.HearingTest.StartPlaying(CurrentItem));
+            IsPlaying = true;
         }
 
         protected override async void OnActivate()
         {
             if (string.IsNullOrEmpty(PresetFileName))
                 return;
-            maxVolume = (int)settings["MaxVolume"];
+            maxVolume = settings.Get<int>("MaxVolume").GetOrElse(100);
             MuteVolume();
             NotifyButtons();
 
@@ -306,6 +322,7 @@
             eventAggregator.Publish(new Events.HearingTest.PitchGeneratorChanged(pitchGenerator));
             eventAggregator.Publish(new Events.HearingTest.ChannelChanged(CurrentChannel));
             eventAggregator.Publish(new Events.HearingTest.StopPlaying());
+            IsPlaying = false;
 
             PresetItems = new ReadOnlyTraversableList<PresetItemViewModel>((await fileManager.GetCollection<PresetItemViewModel>()).ToList());
             ProgressMaximum = PresetItems.Count;

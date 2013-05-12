@@ -39,13 +39,18 @@
 	                                                                                 .Navigate(),
 	                                                                         Description = "Manage and select presets"
 	                                                                     },
-                                                                         new NavigationItem
-                                                                             {
-                                                                                Glyph = "",
-                                                                                NavigationName = "Results browser",
-                                                                                NavigationAction = () => NavigationService.UriFor<BrowserPageViewModel>().Navigate(),
-                                                                                Description = "Browse previously saved test results"
-                                                                             },
+	                                                                 new NavigationItem
+	                                                                     {
+	                                                                         Glyph = "",
+	                                                                         NavigationName = "Results browser",
+	                                                                         NavigationAction =
+	                                                                             () =>
+	                                                                             NavigationService
+	                                                                                 .UriFor<BrowserPageViewModel>()
+	                                                                                 .Navigate(),
+	                                                                         Description =
+	                                                                             "Browse previously saved test results"
+	                                                                     },
 	                                                                 new NavigationItem
 	                                                                     {
 	                                                                         Glyph = "",
@@ -56,6 +61,18 @@
 	                                                                                 .UriFor<SettingsPageViewModel>()
 	                                                                                 .Navigate(),
 	                                                                         Description = "Change appplication settings"
+	                                                                     },
+	                                                                 new NavigationItem
+	                                                                     {
+	                                                                         Glyph = "  ? ",
+	                                                                         NavigationName = "Help",
+	                                                                         NavigationAction =
+	                                                                             () =>
+	                                                                             NavigationService
+	                                                                                 .UriFor<HelpPageViewModel>()
+	                                                                                 .Navigate(),
+	                                                                         Description =
+	                                                                             "Basic information & readme"
 	                                                                     }
 
 	                                                             }));

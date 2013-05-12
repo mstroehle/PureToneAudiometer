@@ -21,21 +21,50 @@
             }
         }
 
-        private readonly IAsyncXmlFileManager recentManager;
-        private int selectedIndex;
+        public bool ShouldShowRecent
+        {
+            get { return shouldShowRecent; }
+            private set
+            {
+                if (value.Equals(shouldShowRecent)) return;
+                shouldShowRecent = value;
+                NotifyOfPropertyChange(() => ShouldShowRecent);
+            }
+        }
 
-        public RecentPageViewModel(INavigationService navigationService, IAsyncXmlFileManager recentManager) : base(navigationService)
+        private readonly IAsyncXmlFileManager recentManager;
+        private readonly ISettings settings;
+        private int selectedIndex;
+        private bool shouldShowRecent;
+
+        public RecentPageViewModel(INavigationService navigationService, IAsyncXmlFileManager recentManager, ISettings settings) : base(navigationService)
         {
             RecentItems = new BindableCollection<RecentItemViewModel>();
             this.recentManager = recentManager;
+            this.settings = settings;
             this.recentManager.FileName = "recent.xml";
         }
 
         public async Task Initialize()
         {
             RecentItems.Clear();
+            ShouldShowRecent = true;
             var result = await recentManager.GetCollection<RecentItemViewModel>();
-            RecentItems.AddRange(result.OrderByDescending(x => x.LastUsedDate));
+            var partial = result.OrderByDescending(x => x.LastUsedDate);
+            var showRecent = settings.Get<string>("RecentItemsShown").GetOrDefault();
+            int takeFirst;
+            if (string.IsNullOrEmpty(showRecent) || showRecent.Equals("No limit"))
+            {
+                RecentItems.AddRange(partial);
+            }
+            else if(int.TryParse(showRecent, out takeFirst))
+            {
+                RecentItems.AddRange(partial.Take(takeFirst));
+            }
+            else
+            {
+                ShouldShowRecent = false;
+            }
         }
 
         public void SelectionChanged(SelectionChangedEventArgs e)

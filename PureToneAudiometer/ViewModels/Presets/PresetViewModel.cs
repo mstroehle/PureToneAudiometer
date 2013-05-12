@@ -1,10 +1,7 @@
 ﻿namespace PureToneAudiometer.ViewModels.Presets
 {
-    using System;
-    using System.ComponentModel;
     using System.IO;
     using System.Linq;
-    using System.Reactive.Linq;
     using System.Windows;
     using System.Windows.Controls;
     using Caliburn.Micro;
@@ -57,11 +54,15 @@
             {
                 if (value == presetName) return;
                 presetName = value;
-
+                var canSaveFlag = !string.IsNullOrEmpty(PresetName) &&
+                                  !PresetName.Any(x => invalidFileNameCharacters.Any(y => x == y));
+                CanSave = canSaveFlag;
                 
                 NotifyOfPropertyChange(() => PresetName);
             }
         }
+
+        private readonly char[] invalidFileNameCharacters = Path.GetInvalidFileNameChars();
 
         public bool CanSave
         {
@@ -89,17 +90,6 @@
             this.eventAggregator.Subscribe(this);
             PresetItems = new BindableCollection<PresetItemViewModel>();
             SelectedItems = new BindableCollection<PresetItemViewModel>();
-
-            Observable.FromEventPattern<PropertyChangedEventArgs>(this, "PropertyChanged")
-                      .Where(x => x.EventArgs.PropertyName == "PresetName")
-                      .Throttle(TimeSpan.FromMilliseconds(300))
-                      .Subscribe(e =>
-                                     {
-                                         var invalidFileNameCharacters = Path.GetInvalidFileNameChars();
-                                         var canSaveFlag = !string.IsNullOrEmpty(PresetName) &&
-                                                           !PresetName.Any(x => invalidFileNameCharacters.Any(y => x == y));
-                                         CanSave = canSaveFlag;
-                                     });
         }
 
         public void AddNewItem()

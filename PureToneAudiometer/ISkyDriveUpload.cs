@@ -3,8 +3,10 @@
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using System.Windows;
     using System.Windows.Controls;
     using Coding4Fun.Toolkit.Controls;
     using Microsoft.Live;
@@ -36,6 +38,31 @@
         {
             destinationFilePath = sourceFilePath = path;
             plotDestinationFilePath = plotSourceFilePath = AudiogramPathUtil.GetSvgFilePath(path);
+        }
+    }
+
+    public class SkyDriveUploadSummary
+    {
+        public int DataFilesTransferred { get; private set; }
+        public int ChartFilesTransferred { get; private set; }
+        public double DataKilobytesTransferred { get; private set; }
+        public double ChartKilobytesTransferred { get; private set; }
+
+        public SkyDriveUploadSummary(IList<ulong> dataFilesSize, IList<ulong> chartFilesSize)
+        {
+            DataFilesTransferred = dataFilesSize.Count;
+            foreach (var size in dataFilesSize)
+            {
+                DataKilobytesTransferred += size;
+            }
+            DataKilobytesTransferred /= 1024;
+
+            ChartFilesTransferred = chartFilesSize.Count;
+            foreach (var size in chartFilesSize)
+            {
+                ChartKilobytesTransferred += size;
+            }
+            ChartKilobytesTransferred /= 1024;
         }
     }
 
@@ -71,6 +98,8 @@
         bool IsInitialized { get; }
         string Message { get; }
 
+        SkyDriveUploadSummary UploadSummary { get; }
+
         Task UploadAsync(IList<SkyDriveFile> files, IProgress<LiveOperationProgress> progress);
 
         Task InitializeAsync();
@@ -91,9 +120,9 @@
 
         private bool shouldUploadPlots;
 
-        private readonly IDictionary<string, object> applicationSettings;
+        private readonly ISettings applicationSettings;
 
-        public SkyDriveUpload(IStorageFolder appStorageFolder, IDictionary<string, object> settings)
+        public SkyDriveUpload(IStorageFolder appStorageFolder, ISettings settings)
         {
             folder = appStorageFolder;
             applicationSettings = settings;
@@ -121,29 +150,35 @@
             }
         }
 
+        public SkyDriveUploadSummary UploadSummary { get; private set; }
+
         public async Task UploadAsync(IList<SkyDriveFile> files, IProgress<LiveOperationProgress> progress)
         {
             if (!IsInitialized)
                 throw new InvalidOperationException("Live client was not authenticated or initialized. Initialize the client first by calling InitializeAsync().");
 
             IsUploading = true;
+            var dataSize = new List<ulong>(files.Count);
+            var chartSize = new List<ulong>(files.Count);
+
             for (var i = 0; i < files.Count; ++i)
             {
                 var file = files[i];
-                var coreMessage = string.Format("Uploading file packs: {0}/{1}", i + 1, files.Count);
-                Message = coreMessage + " (Data)";
+                var coreMessage = string.Format("Uploading packages: {0}/{1}", i + 1, files.Count);
+                Message = coreMessage + " (XML data)";
                 try
                 {
                     var currentFile = await folder.GetFileAsync(file.SourceFilePath);
+                    var basicProperties = await currentFile.GetBasicPropertiesAsync();
                     using (var stream = await currentFile.OpenStreamForReadAsync())
                     {
                         await client.UploadAsync("me/skydrive", file.DestinationFilePath, stream, OverwriteOption.Overwrite,
                                            CancellationToken.None, progress);
                     }
+                    dataSize.Add(basicProperties.Size);
                     OnFileUploadFinished();
-                    
                 }
-                catch (LiveConnectException)
+                catch (LiveConnectException ex)
                 {
                     var toast = new ToastPrompt
                     {
@@ -151,25 +186,34 @@
                         TextOrientation = Orientation.Horizontal,
                         Message = "File " + file.SourceFilePath + " was not uploaded"
                     };
+                    toast.Completed += (sender, args) =>
+                    {
+                        if (args.PopUpResult == PopUpResult.Ok)
+                        {
+                            MessageBox.Show(ex.Message, "Connection error", MessageBoxButton.OK);
+                        }
+                    };
                     toast.Show();
                 }
 
                 if (!shouldUploadPlots) 
                     continue;
 
-                Message = coreMessage + " (Plot)";
+                Message = coreMessage + " (SVG plot)";
                 try
                 {
                     var plotFile = await folder.GetFileAsync(file.PlotSourceFilePath);
+                    var basicProperties = await plotFile.GetBasicPropertiesAsync();
                     using (var stream = await plotFile.OpenStreamForReadAsync())
                     {
                         await
                             client.UploadAsync("me/skydrive", file.PlotDestinationFilePath, stream,
                                                OverwriteOption.Overwrite, CancellationToken.None, progress);
                     }
+                    chartSize.Add(basicProperties.Size);
                     OnFileUploadFinished();
                 }
-                catch (LiveConnectException)
+                catch (LiveConnectException ex)
                 {
                     var toast = new ToastPrompt
                                     {
@@ -177,23 +221,25 @@
                                         TextOrientation = Orientation.Horizontal,
                                         Message = "Plot file " + file.PlotSourceFilePath + " was not uploaded"
                                     };
+                    toast.Completed += (sender, args) =>
+                                           {
+                                               if (args.PopUpResult == PopUpResult.Ok)
+                                               {
+                                                   MessageBox.Show(ex.Message, "Connection error", MessageBoxButton.OK);
+                                               }
+                                           };
                     toast.Show();
                 }
             }
+
+            UploadSummary = new SkyDriveUploadSummary(dataSize, chartSize);
+
             IsUploading = false;
         }
 
         public async Task InitializeAsync()
         {
-            object val;
-            if (applicationSettings.TryGetValue("ShouldAutomaticallyUploadPlots", out val))
-            {
-                shouldUploadPlots = (bool) val;
-            }
-            else
-            {
-                shouldUploadPlots = false;
-            }
+            shouldUploadPlots = applicationSettings.Get<bool>("ShouldAutomaticallyUploadPlots").GetOrElse(false);
 
             Message = "Authenticating";
             var auth = new LiveAuthClient("000000004C0EC1AB");

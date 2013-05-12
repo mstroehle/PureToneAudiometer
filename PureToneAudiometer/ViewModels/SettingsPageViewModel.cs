@@ -1,6 +1,9 @@
 ﻿namespace PureToneAudiometer.ViewModels
 {
     using System.Collections.Generic;
+    using System.Globalization;
+    using System.Linq;
+    using System.Windows;
     using Caliburn.Micro;
 
     public class SettingsPageViewModel : ViewModelBase
@@ -17,7 +20,7 @@
                 int val;
                 if (int.TryParse(maxVolume, out val))
                 {
-                    settings["MaxVolume"] = val;
+                    settings.Set("MaxVolume", val);
                 }
 
                 NotifyOfPropertyChange(() => MaxVolume);
@@ -31,28 +34,66 @@
             {
                 if (value.Equals(shouldUploadPlots)) return;
                 shouldUploadPlots = value;
-                settings["ShouldAutomaticallyUploadPlots"] = value;
+                settings.Set("ShouldAutomaticallyUploadPlots", value);
                 NotifyOfPropertyChange(() => ShouldUploadPlots);
             }
         }
 
-        private readonly IDictionary<string, object> settings;
-        private bool shouldUploadPlots;
+        public string RecentItemsShown
+        {
+            get { return recentItemsShown; }
+            set
+            {
+                if (Equals(value, recentItemsShown)) return;
+                recentItemsShown = value;
+                settings.Set("RecentItemsShown", value);
+                NotifyOfPropertyChange(() => RecentItemsShown);
+            }
+        }
 
-        public SettingsPageViewModel(IDictionary<string, object> settings, INavigationService navigationService) : base(navigationService)
+        public IReadOnlyList<string> RecentItems { get; private set; }
+
+        private readonly ISettings settings;
+        private bool shouldUploadPlots;
+        private string recentItemsShown;
+
+        public SettingsPageViewModel(ISettings settings, INavigationService navigationService) : base(navigationService)
         {
             this.settings = settings;
-         
-            object val;
-            if (settings.TryGetValue("MaxVolume", out val))
-            {
-                MaxVolume = val.ToString();
-            }
+            RecentItems =
+                new List<string>(new[]
+                                     {
+                                         "None",
+                                         "5", "10",
+                                         "15", "20",
+                                         "No limit"
+                                     });
+            MaxVolume = settings.Get<int>("MaxVolume").Select(x => x.ToString(CultureInfo.InvariantCulture)).GetOrElse("100");
+            ShouldUploadPlots = settings.Get<bool>("ShouldAutomaticallyUploadPlots").GetOrElse(false);
+            RecentItemsShown =
+                settings.Get<string>("RecentItemsShown")
+                        .GetOrElse(() => RecentItems.Last());
+        }
 
-            if (settings.TryGetValue("ShouldAutomaticallyUploadPlots", out val))
-            {
-                ShouldUploadPlots = (bool) val;
-            }
+        public void ClearSettings()
+        {
+            var result = MessageBox.Show("Are you sure you want to clear all settings and revert them to default?",
+                                     "Confirmation", MessageBoxButton.OKCancel);
+            if (result != MessageBoxResult.OK)
+                return;
+
+            settings.Clear();
+
+            var dict = new Dictionary<string, object>
+                           {
+                               {"MaxVolume", 100},
+                               {"ShouldAutomaticallyUploadPlots", false},
+                               {"RecentItemsShown", "No limit"}
+                           };
+
+            settings.MergeOverwrite(dict);
+
+            NavigationService.UriFor<MainPageViewModel>().Navigate();
         }
     }
 }

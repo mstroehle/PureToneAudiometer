@@ -80,7 +80,7 @@
         protected async override void OnActivate()
         {
             fileManager.FileName = ResultFileName;
-            var results = await fileManager.Get<TestResult>();
+            var results = await fileManager.Get<HearingTestResult>();
             Description = results.Description;
             var source = results.LeftChannel.Select(x => new DataItem
                                                         {

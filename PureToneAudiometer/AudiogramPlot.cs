@@ -14,7 +14,7 @@
     public interface ICreateAudiogram
     {
         PlotModel PlotModel { get; }
-        TestResult TestResult { get; }
+        HearingTestResult TestResult { get; }
         Task CreateFromAsync(string plotDataFilePath);
         string LastUsedPath { get; }
     }
@@ -58,14 +58,14 @@
         }
 
         public PlotModel PlotModel { get; private set; }
-        public TestResult TestResult { get; private set; }
+        public HearingTestResult TestResult { get; private set; }
 
         public async Task CreateFromAsync(string plotDataFilePath)
         {
             LastUsedPath = plotDataFilePath;
             xmlFileManager.FileName = plotDataFilePath;
             
-            TestResult = await xmlFileManager.Get<TestResult>();
+            TestResult = await xmlFileManager.Get<HearingTestResult>();
 
             Update();
         }

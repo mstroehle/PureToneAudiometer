@@ -27,7 +27,11 @@
 
         <!--TitlePanel contains the name of the application and page title-->
         <StackPanel Grid.Row="0" Margin="12,17,0,28">
+            <TextBlock Text="PURE TONE AUDIOMETER" Style="{StaticResource PhoneTextNormalStyle}"/>
             <TextBlock Text="saved results" Margin="9,-7,0,0" Style="{StaticResource PhoneTextTitle1Style}"/>
+            <ProgressBar Grid.Row="0" 
+                         IsIndeterminate="True"
+                         Visibility="{Binding IsBusy, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
         </StackPanel>
 
         <!--ContentPanel - place additional content here-->
@@ -36,27 +40,24 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <Grid Grid.Row="0" Margin="0,2,0,8">
+            <Grid Grid.Row="0" Margin="0,2,0,15">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <ProgressBar Grid.Row="0" 
-                         IsIndeterminate="True"
-                         Visibility="{Binding IsBusy, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                 
                 <StackPanel Orientation="Vertical" 
                             Visibility="{Binding IsUsingLive, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
                             Grid.Row="1"
                             Margin="6">
-                    <TextBlock Margin="3,0,0,0" 
+                    <TextBlock Margin="12,0,12,10" 
                                Name="UploadMessage"
                                Style="{StaticResource PhoneTextNormalStyle}"/>
                     <ProgressBar IsIndeterminate="False" Maximum="100" 
+                                 Margin="0,0,0,10"
                                  Value="{Binding UploadPercentage}"
                                  Visibility="{Binding IsUploading, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                 </StackPanel>
-                
                 
             </Grid>
             
@@ -82,7 +83,8 @@
                                     <TextBlock Text="Modified"
                                                Width="100"
                                                FontWeight="Light" />
-                                    <TextBlock TextWrapping="Wrap" Text="{Binding LastChangedDate}" 
+                                    <TextBlock TextWrapping="Wrap" 
+                                               Text="{Binding LastChangedDate, StringFormat='yyyy/MM/dd HH:mm:ss'}" 
                                                Style="{StaticResource PhoneTextSmallStyle}"/>
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal">
@@ -90,7 +92,7 @@
                                                Width="100"
                                                FontWeight="Light"/>
                                     <TextBlock TextWrapping="Wrap" 
-                                               Text="{Binding CreationDate}"
+                                               Text="{Binding CreationDate, StringFormat='yyyy/MM/dd HH:mm:ss'}"
                                                Style="{StaticResource PhoneTextSmallStyle}"/>
                                 </StackPanel>
                             </StackPanel>

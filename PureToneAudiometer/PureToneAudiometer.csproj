@@ -104,15 +104,18 @@
     <Compile Include="Events.cs" />
     <Compile Include="IAsyncXmlFileManager.cs" />
     <Compile Include="IReadOnlyTraversableList.cs" />
+    <Compile Include="ISettings.cs" />
     <Compile Include="ISkyDriveUpload.cs" />
     <Compile Include="LocalizedStrings.cs" />
     <Compile Include="AudiogramPlot.cs" />
+    <Compile Include="Option.cs" />
+    <Compile Include="Property.cs" />
     <Compile Include="StringFormatConverter.cs" />
     <Compile Include="TriggeredBooleanToVisibilityConverter.cs" />
     <Compile Include="ViewModels\Core\HearingTestViewModel.cs" />
     <Compile Include="ViewModels\Core\HostPageViewModel.cs" />
     <Compile Include="ViewModels\Core\HearingResult.cs" />
-    <Compile Include="ViewModels\Core\TestResult.cs" />
+    <Compile Include="ViewModels\Core\HearingTestResult.cs" />
     <Compile Include="ViewModels\IDialogBuilder.cs" />
     <Compile Include="ViewModels\MainPageViewModel.cs" />
     <Compile Include="ViewModels\Results\BrowserPageViewModel.cs" />
@@ -120,8 +123,8 @@
     <Compile Include="ViewModels\Results\PlotViewModel.cs" />
     <Compile Include="ViewModels\Results\ResultFileViewModel.cs" />
     <Compile Include="ViewModels\Results\SaveResultViewModel.cs" />
-    <Compile Include="ViewModels\Results\TestResultsPageViewModel.cs" />
-    <Compile Include="ViewModels\Start\AudiometerPageViewModel.cs" />
+    <Compile Include="ViewModels\Results\ResultsPageViewModel.cs" />
+    <Compile Include="ViewModels\Start\HelpPageViewModel.cs" />
     <Compile Include="ViewModels\Start\NavigationItem.cs" />
     <Compile Include="ViewModels\PresetsPageViewModel.cs" />
     <Compile Include="ViewModels\DialogBuilder.cs" />
@@ -156,11 +159,11 @@
     <Compile Include="Views\Results\SaveResultView.xaml.cs">
       <DependentUpon>SaveResultView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Results\TestResultsPageView.xaml.cs">
-      <DependentUpon>TestResultsPageView.xaml</DependentUpon>
+    <Compile Include="Views\Results\ResultsPageView.xaml.cs">
+      <DependentUpon>ResultsPageView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Start\AudiometerPageView.xaml.cs">
-      <DependentUpon>AudiometerPageView.xaml</DependentUpon>
+    <Compile Include="Views\Start\HelpPageView.xaml.cs">
+      <DependentUpon>HelpPageView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Audio\SineOscillator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -229,11 +232,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Results\TestResultsPageView.xaml">
+    <Page Include="Views\Results\ResultsPageView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Start\AudiometerPageView.xaml">
+    <Page Include="Views\Start\HelpPageView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -327,18 +330,6 @@
     <Reference Include="Microsoft.Phone.Controls, Version=8.0.0.0, Culture=neutral, PublicKeyToken=24eec0d8c86cda1e, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Phone.Controls.Toolkit">
       <HintPath>..\packages\WPtoolkit.4.2012.10.30\lib\wp8\Microsoft.Phone.Controls.Toolkit.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reactive.Core">
-      <HintPath>..\packages\Rx-Core.2.1.30214.0\lib\WP8\System.Reactive.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reactive.Interfaces">
-      <HintPath>..\packages\Rx-Interfaces.2.1.30214.0\lib\WP8\System.Reactive.Interfaces.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reactive.Linq">
-      <HintPath>..\packages\Rx-Linq.2.1.30214.0\lib\WP8\System.Reactive.Linq.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reactive.PlatformServices">
-      <HintPath>..\packages\Rx-PlatformServices.2.1.30214.0\lib\WP8\System.Reactive.PlatformServices.dll</HintPath>
     </Reference>
     <Reference Include="System.Windows.Interactivity, Version=3.9.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Caliburn.Micro.1.5.1\lib\wp8\System.Windows.Interactivity.dll</HintPath>

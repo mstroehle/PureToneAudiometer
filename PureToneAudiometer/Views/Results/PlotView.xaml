@@ -29,11 +29,11 @@
             </StackPanel>
             <StackPanel Grid.Row="1" Orientation="Horizontal">
                 <TextBlock Text="Created" Margin="0,0,10,0"/>
-                <TextBlock Text="{Binding CreationDate}"/>
+                <TextBlock Text="{Binding CreationDate, StringFormat='yyyy/MM/dd HH:mm:ss'}"/>
             </StackPanel>
             <StackPanel Grid.Row="2" Orientation="Horizontal">
                 <TextBlock Text="Modified" Margin="0,0,10,0"/>
-                <TextBlock Text="{Binding LastModificationDate}"/>
+                <TextBlock Text="{Binding LastModificationDate, StringFormat='yyyy/MM/dd HH:mm:ss'}"/>
             </StackPanel>
             <silverlight:Plot IsHitTestVisible="False" Margin="0,10,0,5" Grid.Row="3" Model="{Binding PlotModel}" HandleRightClicks="False" IsMouseWheelEnabled="False" />
         </Grid>

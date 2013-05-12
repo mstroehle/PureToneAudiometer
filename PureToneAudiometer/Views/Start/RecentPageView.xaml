@@ -30,10 +30,17 @@
     <Grid x:Name="LayoutRoot" Background="Transparent">
 
         <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
+            <TextBlock Style="{StaticResource PhoneTextLargeStyle}" 
+                       VerticalAlignment="Top"
+                       FontStyle="Italic"
+                       Margin="15,5,20,20"
+                       Visibility="{Binding ShouldShowRecent, Converter={StaticResource InvertedVisibilityConverter}}"
+                       Foreground="LightGray"
+                       Text="Recent section is disabled." TextWrapping="Wrap"/>
             <ListBox ItemsSource="{Binding RecentItems}" 
                      ItemTemplate="{StaticResource RecentItemTemplate}"
+                     Visibility="{Binding ShouldShowRecent, Converter={StaticResource BooleanToVisibilityConverter}}"
                      micro:Message.Attach="[Event SelectionChanged] = [Action SelectionChanged($eventArgs)]">
-                     <!--SelectedIndex="{Binding SelectedIndex, Mode=TwoWay}">-->
                 <ListBox.ItemsPanel>
                     <ItemsPanelTemplate>
                         <toolkit:WrapPanel ItemWidth="180" ItemHeight="100"/>
