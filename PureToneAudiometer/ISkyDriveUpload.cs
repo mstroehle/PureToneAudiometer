@@ -12,17 +12,30 @@
 
     public struct SkyDriveFile
     {
-        private readonly string filePath;
-        public string FilePath{get { return filePath; }}
-        
+        private readonly string sourceFilePath;
+        public string SourceFilePath { get { return sourceFilePath; } }
+
+        private readonly string destinationFilePath;
+        public string DestinationFilePath { get { return destinationFilePath; } }
+
+        private readonly string plotSourceFilePath;
+        public string PlotSourceFilePath { get { return plotSourceFilePath; } }
+
+        private readonly string plotDestinationFilePath;
+        public string PlotDestinationFilePath { get { return plotDestinationFilePath; } }
+
         public SkyDriveFile(string path, string description)
         {
-            filePath = path.Insert(path.LastIndexOf('.'), "_" + description);
+            sourceFilePath = path;
+            destinationFilePath = path.Insert(path.LastIndexOf('.'), "_" + description);
+            plotSourceFilePath = AudiogramPathUtil.GetSvgFilePath(sourceFilePath);
+            plotDestinationFilePath = plotSourceFilePath.Insert(plotSourceFilePath.LastIndexOf('.'), "_" + description);
         }
 
         public SkyDriveFile(string path)
         {
-            filePath = path;
+            destinationFilePath = sourceFilePath = path;
+            plotDestinationFilePath = plotSourceFilePath = AudiogramPathUtil.GetSvgFilePath(path);
         }
     }
 
@@ -44,10 +57,15 @@
         }
     }
 
+    public class UploadFinishedEventArgs : EventArgs
+    {
+    }
+
     public interface ISkyDriveUpload
     {
         event EventHandler<UploadEventArgs> UploadChanged;
         event EventHandler<MessageEventArgs> MessageChanged;
+        event EventHandler<UploadFinishedEventArgs>  FileUploadFinished;
         
         bool IsUploading { get; }
         bool IsInitialized { get; }
@@ -65,14 +83,20 @@
 
         public event EventHandler<UploadEventArgs> UploadChanged;
         public event EventHandler<MessageEventArgs> MessageChanged;
-        
+        public event EventHandler<UploadFinishedEventArgs> FileUploadFinished;
+
         private LiveConnectClient client;
 
         private readonly IStorageFolder folder;
 
-        public SkyDriveUpload(IStorageFolder appStorageFolder)
+        private bool shouldUploadPlots;
+
+        private readonly IDictionary<string, object> applicationSettings;
+
+        public SkyDriveUpload(IStorageFolder appStorageFolder, IDictionary<string, object> settings)
         {
             folder = appStorageFolder;
+            applicationSettings = settings;
         }
 
         public bool IsUploading
@@ -99,38 +123,78 @@
 
         public async Task UploadAsync(IList<SkyDriveFile> files, IProgress<LiveOperationProgress> progress)
         {
+            if (!IsInitialized)
+                throw new InvalidOperationException("Live client was not authenticated or initialized. Initialize the client first by calling InitializeAsync().");
+
             IsUploading = true;
-            var i = 1;
-            foreach (var file in files)
+            for (var i = 0; i < files.Count; ++i)
             {
-                Message = string.Format("Uploading files: {0}/{1}", i,
-                                        files.Count);
+                var file = files[i];
+                var coreMessage = string.Format("Uploading file packs: {0}/{1}", i + 1, files.Count);
+                Message = coreMessage + " (Data)";
                 try
                 {
-                    var currentFile = await folder.GetFileAsync(file.FilePath);
+                    var currentFile = await folder.GetFileAsync(file.SourceFilePath);
                     using (var stream = await currentFile.OpenStreamForReadAsync())
                     {
-                        await client.UploadAsync("me/skydrive", file.FilePath, stream, OverwriteOption.Overwrite,
+                        await client.UploadAsync("me/skydrive", file.DestinationFilePath, stream, OverwriteOption.Overwrite,
                                            CancellationToken.None, progress);
                     }
+                    OnFileUploadFinished();
+                    
                 }
                 catch (LiveConnectException)
                 {
                     var toast = new ToastPrompt
                     {
-                        Title = "Error",
+                        Title = "Connection error",
                         TextOrientation = Orientation.Horizontal,
-                        Message = "File " + file.FilePath + " was not uploaded"
+                        Message = "File " + file.SourceFilePath + " was not uploaded"
                     };
                     toast.Show();
                 }
-                i++;
+
+                if (!shouldUploadPlots) 
+                    continue;
+
+                Message = coreMessage + " (Plot)";
+                try
+                {
+                    var plotFile = await folder.GetFileAsync(file.PlotSourceFilePath);
+                    using (var stream = await plotFile.OpenStreamForReadAsync())
+                    {
+                        await
+                            client.UploadAsync("me/skydrive", file.PlotDestinationFilePath, stream,
+                                               OverwriteOption.Overwrite, CancellationToken.None, progress);
+                    }
+                    OnFileUploadFinished();
+                }
+                catch (LiveConnectException)
+                {
+                    var toast = new ToastPrompt
+                                    {
+                                        Title = "Connection error",
+                                        TextOrientation = Orientation.Horizontal,
+                                        Message = "Plot file " + file.PlotSourceFilePath + " was not uploaded"
+                                    };
+                    toast.Show();
+                }
             }
             IsUploading = false;
         }
 
         public async Task InitializeAsync()
         {
+            object val;
+            if (applicationSettings.TryGetValue("ShouldAutomaticallyUploadPlots", out val))
+            {
+                shouldUploadPlots = (bool) val;
+            }
+            else
+            {
+                shouldUploadPlots = false;
+            }
+
             Message = "Authenticating";
             var auth = new LiveAuthClient("000000004C0EC1AB");
 
@@ -165,6 +229,15 @@
             if (handler != null)
             {
                 handler(this, new UploadEventArgs(IsUploading));
+            }
+        }
+
+        private void OnFileUploadFinished()
+        {
+            var handler = FileUploadFinished;
+            if (handler != null)
+            {
+                handler(this, new UploadFinishedEventArgs());
             }
         }
     }

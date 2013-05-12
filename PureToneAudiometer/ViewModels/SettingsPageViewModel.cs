@@ -24,7 +24,20 @@
             }
         }
 
+        public bool ShouldUploadPlots
+        {
+            get { return shouldUploadPlots; }
+            set
+            {
+                if (value.Equals(shouldUploadPlots)) return;
+                shouldUploadPlots = value;
+                settings["ShouldAutomaticallyUploadPlots"] = value;
+                NotifyOfPropertyChange(() => ShouldUploadPlots);
+            }
+        }
+
         private readonly IDictionary<string, object> settings;
+        private bool shouldUploadPlots;
 
         public SettingsPageViewModel(IDictionary<string, object> settings, INavigationService navigationService) : base(navigationService)
         {
@@ -34,6 +47,11 @@
             if (settings.TryGetValue("MaxVolume", out val))
             {
                 MaxVolume = val.ToString();
+            }
+
+            if (settings.TryGetValue("ShouldAutomaticallyUploadPlots", out val))
+            {
+                ShouldUploadPlots = (bool) val;
             }
         }
     }

@@ -2,16 +2,19 @@
 {
     using System.Collections.Generic;
     using System.ComponentModel;
+    using System.IO;
     using System.Linq;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Input;
     using Caliburn.Micro;
+    using Coding4Fun.Toolkit.Controls;
     using Core;
+    using Microsoft.Live;
     using Windows.Storage;
     using System;
 
-    public class BrowserPageViewModel : ViewModelBase
+    public class BrowserPageViewModel : ViewModelBase, IProgress<LiveOperationProgress>
     {
         public IObservableCollection<ResultFileViewModel> ResultFiles { get; private set; }
 
@@ -37,20 +40,77 @@
             }
         }
 
+        public bool IsUploading
+        {
+            get { return isUploading; }
+            private set
+            {
+                if (value.Equals(isUploading)) return;
+                isUploading = value;
+                NotifyOfPropertyChange(() => IsUploading);
+            }
+        }
+
+        public bool IsUsingLive
+        {
+            get { return isUsingLive; }
+            private set
+            {
+                if (value.Equals(isUsingLive)) return;
+                isUsingLive = value;
+                NotifyOfPropertyChange(() => IsUsingLive);
+            }
+        }
+
+        public string UploadMessage
+        {
+            get { return uploadMessage; }
+            private set
+            {
+                if (value == uploadMessage) return;
+                uploadMessage = value;
+                NotifyOfPropertyChange(() => UploadMessage);
+            }
+        }
+
+        public double UploadPercentage
+        {
+            get { return uploadPercentage; }
+            private set
+            {
+                if (value.Equals(uploadPercentage)) return;
+                uploadPercentage = value;
+                NotifyOfPropertyChange(() => UploadPercentage);
+            }
+        }
+
+        public bool CanUploadToSkydrive { get { return selectedItems.Any(); } }
+
         private readonly IStorageFolder storageFolder;
         private bool isBusy;
 
         private readonly IAsyncXmlFileManager fileManager;
         private bool selectionEnabled;
         private readonly ISet<ResultFileViewModel> selectedItems;
+        private readonly ISkyDriveUpload skyDriveUpload;
+        private bool isUploading;
+        private string uploadMessage;
+        private double uploadPercentage;
+        private bool isUsingLive;
+
         public BrowserPageViewModel(IStorageFolder appStorageFolder, 
             INavigationService navigationService, 
-            IAsyncXmlFileManager xmlFileManager) : base(navigationService)
+            IAsyncXmlFileManager xmlFileManager,
+            ISkyDriveUpload skyDriveUpload) : base(navigationService)
         {
             ResultFiles = new BindableCollection<ResultFileViewModel>();
             selectedItems = new HashSet<ResultFileViewModel>();
             storageFolder = appStorageFolder;
             fileManager = xmlFileManager;
+            this.skyDriveUpload = skyDriveUpload;
+            this.skyDriveUpload.MessageChanged += (sender, args) => UploadMessage = args.Message;
+            this.skyDriveUpload.UploadChanged += (sender, args) => IsUploading = args.IsUploading;
+            this.skyDriveUpload.FileUploadFinished += (sender, args) => UploadPercentage = 0;
         }
 
         protected async override void OnActivate()
@@ -94,6 +154,15 @@
                 ResultFiles.Remove(item);
                 var file = await storageFolder.GetFileAsync(item.FileName);
                 await file.DeleteAsync();
+
+                try
+                {
+                    var svgFile = await storageFolder.GetFileAsync(AudiogramPathUtil.GetSvgFilePath(item.FileName));
+                    await svgFile.DeleteAsync();
+                }
+                catch (FileNotFoundException)
+                {
+                }
             }
 
             SelectionEnabled = false;
@@ -113,6 +182,8 @@
             {
                 selectedItems.Remove(resultFileViewModel);
             }
+
+            NotifyOfPropertyChange(() => CanUploadToSkydrive);
         }
 
         public void BackKeyPress(CancelEventArgs eventArgs)
@@ -141,9 +212,24 @@
             NavigationService.UriFor<TestResultsPageViewModel>().WithParam(x => x.ResultFileName, viewModel.FileName).Navigate();
         }
 
-        public void GoToLiveApi()
+        public async void UploadToSkydrive()
         {
-            NavigationService.UriFor<Live.MainLivePageViewModel>().WithParam(x => x.CombinedPath, string.Join(";", selectedItems.Select(x => x.FileName))).Navigate();
+            IsBusy = IsUsingLive = true;
+            await skyDriveUpload.InitializeAsync();
+            await skyDriveUpload.UploadAsync(selectedItems.Select(x => new SkyDriveFile(x.FileName, x.Description)).ToList(), this);
+            IsBusy = IsUsingLive = false;
+            var toast = new ToastPrompt
+            {
+                Title = "Upload completed",
+                TextOrientation = Orientation.Horizontal,
+                TextWrapping = TextWrapping.Wrap
+            };
+            toast.Show();
+        }
+
+        public void Report(LiveOperationProgress value)
+        {
+            UploadPercentage = value.ProgressPercentage;
         }
     }
 }

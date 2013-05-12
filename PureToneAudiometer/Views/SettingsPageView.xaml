@@ -50,10 +50,19 @@
         <!--ContentPanel - place additional content here-->
         <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
             <StackPanel Orientation="Vertical">
-                <StackPanel Orientation="Horizontal">
+                <StackPanel Orientation="Horizontal"
+                            Margin="0,10,0,10">
                     <TextBlock Text="Max volume:" VerticalAlignment="Center"/>
-                    <TextBox Text="{Binding MaxVolume, Mode=TwoWay}" MinWidth="100" VerticalAlignment="Center"/>
+                    <TextBox Text="{Binding MaxVolume, Mode=TwoWay}" 
+                             MinWidth="100" 
+                             VerticalAlignment="Center"/>
                     <TextBlock Text="[dB]" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" 
+                            Margin="0,10,0,10">
+                    <TextBlock Text="Upload plots to Skydrive: " 
+                               VerticalAlignment="Center"/>
+                    <CheckBox IsChecked="{Binding ShouldUploadPlots, Mode=TwoWay}"/>
                 </StackPanel>
             </StackPanel>
         </Grid>

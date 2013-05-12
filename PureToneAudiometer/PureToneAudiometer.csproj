@@ -94,6 +94,7 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="AppBootstrapper.cs" />
+    <Compile Include="AudiogramPathUtil.cs" />
     <Compile Include="Audio\Formatter.cs" />
     <Compile Include="Audio\IOscillator.cs" />
     <Compile Include="Audio\PureToneSource.cs" />
@@ -105,7 +106,7 @@
     <Compile Include="IReadOnlyTraversableList.cs" />
     <Compile Include="ISkyDriveUpload.cs" />
     <Compile Include="LocalizedStrings.cs" />
-    <Compile Include="Plotting.cs" />
+    <Compile Include="AudiogramPlot.cs" />
     <Compile Include="StringFormatConverter.cs" />
     <Compile Include="TriggeredBooleanToVisibilityConverter.cs" />
     <Compile Include="ViewModels\Core\HearingTestViewModel.cs" />
@@ -113,9 +114,10 @@
     <Compile Include="ViewModels\Core\HearingResult.cs" />
     <Compile Include="ViewModels\Core\TestResult.cs" />
     <Compile Include="ViewModels\IDialogBuilder.cs" />
-    <Compile Include="ViewModels\Live\MainLivePageViewModel.cs" />
     <Compile Include="ViewModels\MainPageViewModel.cs" />
     <Compile Include="ViewModels\Results\BrowserPageViewModel.cs" />
+    <Compile Include="ViewModels\Results\DataViewModel.cs" />
+    <Compile Include="ViewModels\Results\PlotViewModel.cs" />
     <Compile Include="ViewModels\Results\ResultFileViewModel.cs" />
     <Compile Include="ViewModels\Results\SaveResultViewModel.cs" />
     <Compile Include="ViewModels\Results\TestResultsPageViewModel.cs" />
@@ -139,14 +141,17 @@
     <Compile Include="Views\Core\HostPageView.xaml.cs">
       <DependentUpon>HostPageView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Live\MainLivePageView.xaml.cs">
-      <DependentUpon>MainLivePageView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\MainPageView.xaml.cs">
       <DependentUpon>MainPageView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Results\BrowserPageView.xaml.cs">
       <DependentUpon>BrowserPageView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Results\DataView.xaml.cs">
+      <DependentUpon>DataView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Results\PlotView.xaml.cs">
+      <DependentUpon>PlotView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Results\SaveResultView.xaml.cs">
       <DependentUpon>SaveResultView.xaml</DependentUpon>
@@ -204,15 +209,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Live\MainLivePageView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Views\MainPageView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Results\BrowserPageView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Results\DataView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Results\PlotView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -289,7 +298,6 @@
     <Content Include="Assets\Tiles\IconicTileSmall.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="README_FIRST.txt" />
     <Content Include="Toolkit.Content\ApplicationBar.Cancel.png" />
     <Content Include="Toolkit.Content\ApplicationBar.Check.png" />
     <Content Include="Toolkit.Content\ApplicationBar.Delete.png" />

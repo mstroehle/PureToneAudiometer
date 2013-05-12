@@ -41,7 +41,7 @@
 	                                                                     },
                                                                          new NavigationItem
                                                                              {
-                                                                                Glyph = "",
+                                                                                Glyph = "",
                                                                                 NavigationName = "Results browser",
                                                                                 NavigationAction = () => NavigationService.UriFor<BrowserPageViewModel>().Navigate(),
                                                                                 Description = "Browse previously saved test results"

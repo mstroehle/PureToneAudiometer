@@ -36,9 +36,30 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <ProgressBar Grid.Row="0" 
+            <Grid Grid.Row="0" Margin="0,2,0,8">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <ProgressBar Grid.Row="0" 
                          IsIndeterminate="True"
                          Visibility="{Binding IsBusy, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                
+                <StackPanel Orientation="Vertical" 
+                            Visibility="{Binding IsUsingLive, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                            Grid.Row="1"
+                            Margin="6">
+                    <TextBlock Margin="3,0,0,0" 
+                               Name="UploadMessage"
+                               Style="{StaticResource PhoneTextNormalStyle}"/>
+                    <ProgressBar IsIndeterminate="False" Maximum="100" 
+                                 Value="{Binding UploadPercentage}"
+                                 Visibility="{Binding IsUploading, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                </StackPanel>
+                
+                
+            </Grid>
+            
             <toolkit:LongListMultiSelector ItemsSource="{Binding ResultFiles}"
                                            IsGroupingEnabled="False"
                                            Grid.Row="1"
@@ -91,7 +112,7 @@
                 Text="Delete"
                 IconUri="/Toolkit.Content/ApplicationBar.Delete.png"
                 Visibility="{Binding SelectionEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-            <bindableAppBar:BindableAppBarMenuItem Name="GoToLiveApi" Text="upload to skydrive"/>
+            <bindableAppBar:BindableAppBarMenuItem Name="UploadToSkydrive" Text="upload to skydrive"/>
         </bindableAppBar:BindableAppBar>
     </Grid>
 
