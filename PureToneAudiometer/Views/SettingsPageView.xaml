@@ -77,7 +77,13 @@
                                VerticalAlignment="Center"/>
                     <toolkit:ListPicker ItemsSource="{Binding RecentItems}" 
                                         Width="200"
-                                        SelectedItem="{Binding RecentItemsShown, Mode=TwoWay}"/>
+                                        SelectedItem="{Binding RecentItemsShown, Mode=TwoWay}">
+                        <toolkit:ListPicker.FullModeItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Style="{StaticResource PhoneTextLargeStyle}" Text="{Binding}"/>
+                            </DataTemplate>
+                        </toolkit:ListPicker.FullModeItemTemplate>
+                    </toolkit:ListPicker>
                 </StackPanel>
             </StackPanel>
             <Button Grid.Row="1" 

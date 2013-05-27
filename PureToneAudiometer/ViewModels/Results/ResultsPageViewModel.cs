@@ -1,5 +1,6 @@
 ﻿namespace PureToneAudiometer.ViewModels.Results
 {
+    using System;
     using System.Threading.Tasks;
     using System.Windows;
     using Caliburn.Micro;
@@ -109,24 +110,30 @@
             dialogBuilder.Show();
         }
 
-        private async Task Discard()
+        private async Task<bool> Discard()
         {
             if (string.IsNullOrEmpty(PlotViewModel.Description))
             {
                 var result = MessageBox.Show("Are you sure you want to discard the result?", "Confirmation",
                                 MessageBoxButton.OKCancel);
 
-                if (result == MessageBoxResult.Cancel)
-                    return;
+                if (result != MessageBoxResult.OK)
+                    return false;
 
                 await PlotViewModel.DeleteAll();
+                return true;
             }
+
+            return true;
         }
 
         public async void GoToMainMenu()
         {
-            await Discard();
-            
+            var result = await Discard();
+
+            if (!result)
+                return;
+
             navigationService.UriFor<MainPageViewModel>().Navigate();
         }
 

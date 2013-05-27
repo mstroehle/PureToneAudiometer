@@ -265,6 +265,7 @@
         {
             pitchGenerator.Attenuation = -maxVolume;
             CurrentVolume = (maxVolume + pitchGenerator.Attenuation).ToString(CultureInfo.InvariantCulture);
+            NotifyOfPropertyChange(() => CanDecreaseVolume);
         }
 
         public void Deactivate()

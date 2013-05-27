@@ -1,5 +1,6 @@
 ﻿namespace PureToneAudiometer.ViewModels.Start
 {
+    using System;
     using System.Linq;
     using System.Threading.Tasks;
     using System.Windows.Controls;
@@ -67,12 +68,14 @@
             }
         }
 
-        public void SelectionChanged(SelectionChangedEventArgs e)
+        public async void SelectionChanged(SelectionChangedEventArgs e)
         {
             if (e.AddedItems.Count == 0)
                 return;
 
             var item = (RecentItemViewModel)e.AddedItems[0];
+            item.LastUsedDate = DateTime.Now;
+            await recentManager.Save(RecentItems.ToList());
             NavigationService.UriFor<HostPageViewModel>().WithParam(x => x.PresetFileName, item.FilePath).Navigate();
             SelectedIndex = -1;
         }
